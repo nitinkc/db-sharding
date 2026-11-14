@@ -1,0 +1,69 @@
+# Module 01 — Why Sharding?
+
+## The scaling problem
+
+A single PostgreSQL server has hard ceilings: CPU, RAM, IOPS, disk, connection
+count. When a workload hits one of them you have three levers:
+
+```
+   Scale UP              Scale OUT (reads)         Scale OUT (writes)
+   ──────────            ─────────────────         ──────────────────
+   bigger machine        replicas share reads     SHARDING: split the data
+   │                     │                        │
+   simple                read traffic scales      write AND read traffic scale
+   has a ceiling         writes don't scale       complexity moves to the app/db
+```
+
+**Replication** copies the *same* data to more machines — great for read
+throughput and availability, but every replica still writes every row. It does
+nothing for a write-bound or data-too-big workload.
+
+**Sharding** (horizontal partitioning across servers) gives each node a *slice*
+of the data. N nodes ⇒ roughly N× the write capacity and N× the storage.
+
+## Partitioning vs replication vs sharding
+
+| Concept | One node or many? | What moves | Solves |
+|---|---|---|---|
+| Table partitioning | One node | Rows split into child tables on the same server | Huge-table manageability, pruning, retention |
+| Replication | Many nodes | Whole dataset copied to every node | Read scaling, HA, failover |
+| Sharding | Many nodes | Disjoint row slices, one per node | Write scaling, dataset > one disk |
+
+A sharded system typically *also* replicates (each shard may have replicas) —
+the two are complementary, not alternatives.
+
+![Sharding versus replication: splitting rows versus copying the dataset](../diagrams/sharding-vs-replication.svg)
+
+## The bazaar story
+
+Bazaar is a marketplace. Sellers post listings; buyers favorite them. Growth:
+
+- 10k sellers → 10M sellers
+- Listings & favorites grow ~10× faster than sellers
+- P99 latency on "show my storefront" degrades as tables outgrow RAM
+
+Sharding by `seller_id` is the natural fit: a seller's storefront is
+self-contained, seller traffic is roughly uniform, and "join a seller to their
+listings" stays inside one machine. We'll prove each of those claims with real
+query plans in the labs.
+
+## What sharding costs
+
+- **The shard key becomes load-bearing.** Choose wrong and you get hotspots or
+  fan-out queries (Lab 6, Tasks 3–5).
+- **Cross-shard operations are expensive.** Joins across shards mean data
+  movement; cross-shard transactions need 2PC.
+- **Resharding is a migration**, not a config change.
+- **Uniqueness & foreign keys** only work inside a shard (or must include the
+  shard key — as `sellers_by_country`'s PK already demonstrates).
+
+## When NOT to shard
+
+- Your dataset fits comfortably on one well-sized node.
+- Your bottleneck is reads (use replicas or a cache).
+- Your queries are mostly cross-tenant analytics (consider a columnar store).
+- You can't find a shard key that serves the dominant query patterns.
+
+Sharding is a *scaling* tool, not a default architecture.
+
+**Next:** [Module 02 — Sharding Strategies](02-sharding-strategies.md)

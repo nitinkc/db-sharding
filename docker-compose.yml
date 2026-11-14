@@ -1,0 +1,64 @@
+services:
+  coordinator:
+    image: citusdata/citus:12.1
+    container_name: bazaar-coordinator
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: bazaar
+      POSTGRES_USER: postgres
+      POSTGRES_HOST_AUTH_METHOD: trust
+    volumes:
+      - ./db/coordinator-init:/docker-entrypoint-initdb.d
+      - coordinator-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d bazaar"]
+      interval: 2s
+      timeout: 5s
+      retries: 30
+    networks:
+      - bazaar-net
+
+  worker1:
+    image: citusdata/citus:12.1
+    container_name: bazaar-worker1
+    environment:
+      POSTGRES_DB: bazaar
+      POSTGRES_USER: postgres
+      POSTGRES_HOST_AUTH_METHOD: trust
+    volumes:
+      - ./db/worker-init:/docker-entrypoint-initdb.d
+      - worker1-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d bazaar"]
+      interval: 2s
+      timeout: 5s
+      retries: 30
+    networks:
+      - bazaar-net
+
+  worker2:
+    image: citusdata/citus:12.1
+    container_name: bazaar-worker2
+    environment:
+      POSTGRES_DB: bazaar
+      POSTGRES_USER: postgres
+      POSTGRES_HOST_AUTH_METHOD: trust
+    volumes:
+      - ./db/worker-init:/docker-entrypoint-initdb.d
+      - worker2-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d bazaar"]
+      interval: 2s
+      timeout: 5s
+      retries: 30
+    networks:
+      - bazaar-net
+
+volumes:
+  coordinator-data:
+  worker1-data:
+  worker2-data:
+
+networks:
+  bazaar-net:

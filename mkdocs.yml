@@ -1,0 +1,82 @@
+site_name: Database Sharding
+site_description: A hands-on database sharding course with PostgreSQL, Citus, and a real marketplace workload.
+docs_dir: docs
+site_dir: site
+
+theme:
+  name: material
+  language: en
+  font: false
+  icon:
+    logo: material/database
+  palette:
+    - media: '(prefers-color-scheme: light)'
+      scheme: default
+      primary: teal
+      accent: cyan
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: '(prefers-color-scheme: dark)'
+      scheme: slate
+      primary: teal
+      accent: cyan
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.tracking
+    - navigation.top
+    - navigation.footer
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+
+plugins:
+  - search
+  - glightbox
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - md_in_html
+  - toc:
+      permalink: true
+  - pymdownx.details
+  - pymdownx.blocks.details
+  - pymdownx.superfences
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.tabbed:
+      alternate_style: true
+
+nav:
+  - Home: index.md
+  - Modules:
+      - '00 · Environment setup': modules/00-environment-setup.md
+      - '01 · Why sharding?': modules/01-why-sharding.md
+      - '02 · Sharding strategies': modules/02-sharding-strategies.md
+      - '03 · Citus architecture': modules/03-citus-architecture.md
+      - '04 · Choosing a shard key': modules/04-choosing-a-shard-key.md
+      - '05 · Query routing': modules/05-query-routing.md
+      - '06 · Resharding & limits': modules/06-resharding-and-limits.md
+      - '07 · Range & time-series': modules/07-range-and-timeseries.md
+      - '08 · Capstone': modules/08-capstone.md
+  - Labs:
+      - '1 · Orientation': labs/lab-01-orientation.md
+      - '2 · Table storage': labs/lab-02-table-storage.md
+      - '3 · Distribute sellers': labs/lab-03-distribute-sellers.md
+      - '4 · Shard placement': labs/lab-04-shard-placement.md
+      - '5 · Inside a shard': labs/lab-05-inside-a-shard.md
+      - '6 · Shard-key experiments': labs/lab-06-shard-key-lab.md
+  - Solutions:
+      - Overview: solutions/index.md
+      - Lab 1: solutions/lab-01-solutions.md
+      - Lab 2: solutions/lab-02-solutions.md
+      - Lab 3: solutions/lab-03-solutions.md
+      - Lab 4: solutions/lab-04-solutions.md
+      - Lab 5: solutions/lab-05-solutions.md
+      - Lab 6: solutions/lab-06-solutions.md

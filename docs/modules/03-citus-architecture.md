@@ -1,0 +1,84 @@
+# Module 03 — Citus Architecture
+
+Citus turns a fleet of PostgreSQL servers into one logical, sharded database.
+It is a PostgreSQL **extension** — not a fork — so every node is just Postgres
+with extra superpowers.
+
+## Roles
+
+```
+   app / psql
+       │
+       ▼
+┌──────────────┐        ┌──────────────┐
+│ COORDINATOR  │───────▶│  WORKER 1    │  shards: sellers_102016 … _102019
+│ localhost    │        │  citus+pg    │
+│   :5432      │───────▶│  WORKER 2    │  shards: sellers_102020 … _102023
+│ metadata,    │        └──────────────┘
+│ planning,    │
+│ merge        │
+└──────────────┘
+```
+
+![Citus coordinator, workers, and shard placement](../diagrams/citus-cluster-architecture.svg)
+
+- **Coordinator** — owns the cluster metadata, plans distributed queries, sends
+  per-shard tasks to workers, merges results. By default holds no data shards.
+- **Workers** — hold shards as ordinary tables named `<table>_<shardid>`
+  (`sellers_102016`), execute shard queries, return partial results.
+
+The coordinator you meet in the labs is a regular Postgres you can also keep
+local tables on — which is exactly what `listings` and `favorites` are before
+you distribute them.
+
+## The three table types
+
+| Type | Metadata | Physical rows | Use for |
+|---|---|---|---|
+| `distributed` | in `citus_tables` | sharded across workers by the distribution column | big, high-traffic tables |
+| `reference` | in `citus_tables` | **full copy on every worker** | small lookups/dimensions joined everywhere (`countries`, `categories`) |
+| local | absent | only on coordinator | everything else |
+
+## Shards and placements
+
+- **Shard** — logical slice of a distributed table. Defined by a *hash token
+  range* in `pg_dist_shard` (`shardminvalue`/`shardmaxvalue`).
+- **Placement** — a physical copy of a shard on a node
+  (`pg_dist_shard_placement`). Replication factor 1 ⇒ one placement per shard.
+
+Metadata cheat sheet (all queried in labs):
+
+| Object | Contents |
+|---|---|
+| `citus_tables` | managed tables, type, distribution column, shard count, `colocation_id` |
+| `citus_shards` | every shard: id, table-name suffix, node, size — the friendliest view |
+| `pg_dist_node` | node registry |
+| `pg_dist_shard` | shard → hash-token range |
+| `pg_dist_shard_placement` | shard → node placements |
+| `pg_dist_colocation` | co-location groups |
+
+Helpers you'll use: `citus_get_active_worker_nodes()`,
+`get_shard_id_for_distribution_column(table, value)`,
+`run_command_on_shards(table, 'SQL with %s')`.
+
+## How a query flows
+
+1. psql/app sends SQL to the **coordinator**.
+2. The planner inspects `WHERE` on the distribution column. One value ⇒ it can
+   compute the target shard (`hash(value)` → token range → shard → placement →
+   node) and emits a **router** plan (`Task Count: 1`).
+3. No filter on the distribution column ⇒ **adaptive/scatter-gather** plan: one
+   task per shard, run in parallel, results merged on the coordinator.
+4. The coordinator stitches rows together and returns them — the client can't
+   tell the difference (until it looks at latency or `EXPLAIN`).
+
+## Co-location
+
+Two tables distributed by the same column type, shard count, and placements
+share a **co-location group** (`colocation_id`). Guarantees: shard N of table A
+and shard N of table B live on the same worker ⇒ joins on the distribution
+column run *inside* the worker as local joins (Lab 6, Task 6).
+`colocate_with := 'sellers'` inherits both the shard count and placement —
+which is why you can't pass `shard_count` alongside it.
+
+**Next:** [Module 04 — Choosing a Shard Key](04-choosing-a-shard-key.md)

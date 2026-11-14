@@ -1,0 +1,74 @@
+<mxfile host="Electron">
+  <diagram id="strategies" name="Shard Key Strategies">
+    <mxGraphModel dx="900" dy="650" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1250" pageHeight="750" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="h1" value="1) HASH — hash(key) → token range → shard" style="text;html=1;fontSize=15;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="20" width="380" height="24" as="geometry"/>
+        </mxCell>
+        <mxCell id="h2" value="2) RANGE — contiguous key interval per shard" style="text;html=1;fontSize=15;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="450" y="20" width="400" height="24" as="geometry"/>
+        </mxCell>
+        <mxCell id="h3" value="3) DIRECTORY — lookup table maps key → node" style="text;html=1;fontSize=15;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="880" y="20" width="360" height="24" as="geometry"/>
+        </mxCell>
+        <mxCell id="ha" value="seller_id = 42" style="rounded=1;html=1;whiteSpace=wrap;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="60" y="70" width="110" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="hb" value="hash(42) =&#xa;0x9e3779" style="shape=hexagon;html=1;whiteSpace=wrap;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="200" y="60" width="110" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="hc" value="shard 5&#xa;(token range)" style="shape=cylinder3;html=1;whiteSpace=wrap;fillColor=#ffe6cc;strokeColor=#d79b00;size=14;" vertex="1" parent="1">
+          <mxGeometry x="60" y="160" width="110" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="he1" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;label=hash" edge="1" parent="1" source="ha" target="hb"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="he2" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;label=routes" edge="1" parent="1" source="hb" target="hc"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="hnote" value="+ even spread, deterministic&#xa;+ monotonic keys scatter&#xa;− range queries fan out to ALL shards" style="text;html=1;fontSize=11;align=left;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="40" y="250" width="360" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="ra" value="Mar 1" style="rounded=1;html=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="470" y="70" width="100" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="rb" value="Mar 2" style="rounded=1;html=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="580" y="70" width="100" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="rc" value="Mar 3 …∞" style="rounded=1;html=1;whiteSpace=wrap;fillColor=#f8cecc;strokeColor=#b85450;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="690" y="70" width="100" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="rd" value="shard A" style="shape=cylinder3;html=1;whiteSpace=wrap;fillColor=#ffe6cc;strokeColor=#d79b00;size=14;" vertex="1" parent="1">
+          <mxGeometry x="470" y="160" width="100" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="re" value="shard B" style="shape=cylinder3;html=1;whiteSpace=wrap;fillColor=#ffe6cc;strokeColor=#d79b00;size=14;" vertex="1" parent="1">
+          <mxGeometry x="580" y="160" width="100" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="rf" value="shard C&#xa;HOT" style="shape=cylinder3;html=1;whiteSpace=wrap;fillColor=#f8cecc;strokeColor=#b85450;size=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="690" y="160" width="100" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="re1" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;" edge="1" parent="1" source="ra" target="rd"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="re2" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;" edge="1" parent="1" source="rb" target="re"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="re3" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;label=all new writes" edge="1" parent="1" source="rc" target="rf"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="rnote" value="+ range queries read few shards&#xa;+ cheap retention (drop partition)&#xa;− monotonic keys → ONE hot shard" style="text;html=1;fontSize=11;align=left;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="450" y="250" width="380" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="da" value="key = seller 42" style="rounded=1;html=1;whiteSpace=wrap;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="900" y="70" width="120" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="db" value="DIRECTORY&#xa;42 → node B" style="shape=parallelogram;html=1;whiteSpace=wrap;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="1060" y="65" width="130" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="dc" value="node B" style="shape=cylinder3;html=1;whiteSpace=wrap;fillColor=#ffe6cc;strokeColor=#d79b00;size=14;" vertex="1" parent="1">
+          <mxGeometry x="980" y="160" width="100" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="de1" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;label=lookup" edge="1" parent="1" source="da" target="db"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="de2" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;" edge="1" parent="1" source="db" target="dc"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="dnote" value="+ move any tenant anytime&#xa;+ finest control&#xa;− extra hop; directory must be&#xa;   highly available + consistent" style="text;html=1;fontSize=11;align=left;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="880" y="250" width="350" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="foot" value="Citus uses HASH (token ranges). Two properties decide spread:&#xa;CARDINALITY (how many buckets can exist) × VALUE DISTRIBUTION (how uniform)." style="rounded=0;html=1;whiteSpace=wrap;fillColor=#f5f5f5;strokeColor=#666666;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="250" y="360" width="750" height="55" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

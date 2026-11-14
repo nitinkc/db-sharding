@@ -1,0 +1,58 @@
+<mxfile host="Electron">
+  <diagram id="hash-placement" name="Hash Placement">
+    <mxGraphModel dx="900" dy="650" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1200" pageHeight="700" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="title" value="Hash Placement — consecutive seller_ids scatter across shards" style="text;html=1;fontSize=16;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="280" y="20" width="640" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="ids" value="seller_ids&#xa;1 2 3 4 5 6 7 8&#xa;(assigned in order)" style="rounded=1;html=1;whiteSpace=wrap;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="40" y="300" width="130" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="hash" value="hash(seller_id)&#xa;→ token range" style="shape=hexagon;html=1;whiteSpace=wrap;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="230" y="290" width="150" height="100" as="geometry"/>
+        </mxCell>
+        <mxCell id="w1" value="WORKER 1" style="rounded=1;html=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;verticalAlign=top;spacingTop=6;" vertex="1" parent="1">
+          <mxGeometry x="460" y="120" width="300" height="220" as="geometry"/>
+        </mxCell>
+        <mxCell id="w2" value="WORKER 2" style="rounded=1;html=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;verticalAlign=top;spacingTop=6;" vertex="1" parent="1">
+          <mxGeometry x="460" y="380" width="300" height="220" as="geometry"/>
+        </mxCell>
+        <mxCell id="sA" value="shard …016&#xa;ids: 1, 8" style="shape=cylinder3;html=1;whiteSpace=wrap;fillColor=#ffe6cc;strokeColor=#d79b00;size=13;" vertex="1" parent="1">
+          <mxGeometry x="490" y="160" width="110" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="sB" value="shard …019&#xa;ids: 3" style="shape=cylinder3;html=1;whiteSpace=wrap;fillColor=#ffe6cc;strokeColor=#d79b00;size=13;" vertex="1" parent="1">
+          <mxGeometry x="620" y="160" width="110" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="sC" value="shard …018&#xa;ids: 4, 7" style="shape=cylinder3;html=1;whiteSpace=wrap;fillColor=#ffe6cc;strokeColor=#d79b00;size=13;" vertex="1" parent="1">
+          <mxGeometry x="490" y="240" width="110" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="sD" value="shard …020" style="shape=cylinder3;html=1;whiteSpace=wrap;fillColor=#ffe6cc;strokeColor=#d79b00;size=13;" vertex="1" parent="1">
+          <mxGeometry x="620" y="240" width="110" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="sE" value="shard …017&#xa;id: 5" style="shape=cylinder3;html=1;whiteSpace=wrap;fillColor=#e1d5e7;strokeColor=#9673a6;size=13;" vertex="1" parent="1">
+          <mxGeometry x="490" y="420" width="110" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="sF" value="shard …021&#xa;id: 6" style="shape=cylinder3;html=1;whiteSpace=wrap;fillColor=#e1d5e7;strokeColor=#9673a6;size=13;" vertex="1" parent="1">
+          <mxGeometry x="620" y="420" width="110" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="sG" value="shard …022&#xa;id: 2" style="shape=cylinder3;html=1;whiteSpace=wrap;fillColor=#e1d5e7;strokeColor=#9673a6;size=13;" vertex="1" parent="1">
+          <mxGeometry x="490" y="500" width="110" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="sH" value="shard …023" style="shape=cylinder3;html=1;whiteSpace=wrap;fillColor=#e1d5e7;strokeColor=#9673a6;size=13;" vertex="1" parent="1">
+          <mxGeometry x="620" y="500" width="110" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="e0" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeWidth=2;" edge="1" parent="1" source="ids" target="hash"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e1" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;" edge="1" parent="1" source="hash" target="sA"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e2" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;" edge="1" parent="1" source="hash" target="sE"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="note" value="Lab 6 Task 2 findings:&#xa;• consecutive ids land on DIFFERENT shards — mapping looks random&#xa;• re-running gives IDENTICAL results — hashing is deterministic&#xa;• same value always → same shard (that's what makes routing computable)&#xa;• monotonic keys spread evenly — no write hotspot" style="rounded=0;html=1;whiteSpace=wrap;fillColor=#f5f5f5;strokeColor=#666666;align=left;spacingLeft=8;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="820" y="200" width="340" height="160" as="geometry"/>
+        </mxCell>
+        <mxCell id="sql" value="SELECT id, get_shard_id_for_distribution_column('sellers', id)&#xa;FROM generate_series(1,8) id;" style="rounded=0;html=1;whiteSpace=wrap;fillColor=#1f1f1f;fontColor=#d4d4d4;strokeColor=#444444;fontFamily=Courier New;fontSize=11;align=left;spacingLeft=8;" vertex="1" parent="1">
+          <mxGeometry x="820" y="390" width="340" height="60" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

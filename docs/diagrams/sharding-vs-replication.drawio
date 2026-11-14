@@ -1,0 +1,60 @@
+<mxfile host="Electron">
+  <diagram id="shard-vs-repl" name="Sharding vs Replication">
+    <mxGraphModel dx="900" dy="650" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1200" pageHeight="700" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="t1" value="SCALE UP — one bigger node" style="text;html=1;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="60" y="30" width="300" height="24" as="geometry"/>
+        </mxCell>
+        <mxCell id="t2" value="REPLICATION — copies scale reads" style="text;html=1;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="440" y="30" width="320" height="24" as="geometry"/>
+        </mxCell>
+        <mxCell id="t3" value="SHARDING — slices scale writes + size" style="text;html=1;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="830" y="30" width="340" height="24" as="geometry"/>
+        </mxCell>
+        <mxCell id="p1" value="single node&#xa;all writes + all reads&#xa;one disk, one CPU" style="rounded=1;html=1;whiteSpace=wrap;fillColor=#fff2cc;strokeColor=#d6b656;verticalAlign=top;spacingTop=6;" vertex="1" parent="1">
+          <mxGeometry x="60" y="80" width="300" height="300" as="geometry"/>
+        </mxCell>
+        <mxCell id="p1db" value="bazaar&#xa;ALL rows" style="shape=cylinder3;html=1;whiteSpace=wrap;fillColor=#ffe6cc;strokeColor=#d79b00;size=18;" vertex="1" parent="1">
+          <mxGeometry x="150" y="180" width="120" height="90" as="geometry"/>
+        </mxCell>
+        <mxCell id="p2" value="primary → replicas&#xa;writes: only primary&#xa;reads: any node" style="rounded=1;html=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;verticalAlign=top;spacingTop=6;" vertex="1" parent="1">
+          <mxGeometry x="440" y="80" width="320" height="300" as="geometry"/>
+        </mxCell>
+        <mxCell id="p2a" value="PRIMARY&#xa;A–Z" style="shape=cylinder3;html=1;whiteSpace=wrap;fillColor=#ffe6cc;strokeColor=#d79b00;size=14;" vertex="1" parent="1">
+          <mxGeometry x="470" y="170" width="90" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="p2b" value="replica&#xa;A–Z" style="shape=cylinder3;html=1;whiteSpace=wrap;fillColor=#dae8fc;strokeColor=#6c8ebf;size=14;" vertex="1" parent="1">
+          <mxGeometry x="555" y="170" width="90" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="p2c" value="replica&#xa;A–Z" style="shape=cylinder3;html=1;whiteSpace=wrap;fillColor=#dae8fc;strokeColor=#6c8ebf;size=14;" vertex="1" parent="1">
+          <mxGeometry x="640" y="170" width="90" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="p2note" value="every node stores EVERY row&#xa;⇒ writes don't scale" style="text;html=1;fontSize=11;fontStyle=2;fontColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="470" y="280" width="260" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="r1" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;dashed=1;" edge="1" parent="1" source="p2a" target="p2b"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="r2" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;dashed=1;" edge="1" parent="1" source="p2b" target="p2c"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="p3" value="coordinator → workers&#xa;each worker: a SLICE" style="rounded=1;html=1;whiteSpace=wrap;fillColor=#e1d5e7;strokeColor=#9673a6;verticalAlign=top;spacingTop=6;" vertex="1" parent="1">
+          <mxGeometry x="830" y="80" width="330" height="300" as="geometry"/>
+        </mxCell>
+        <mxCell id="p3a" value="shard 1&#xa;hash A–H" style="shape=cylinder3;html=1;whiteSpace=wrap;fillColor=#ffe6cc;strokeColor=#d79b00;size=14;" vertex="1" parent="1">
+          <mxGeometry x="855" y="170" width="90" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="p3b" value="shard 2&#xa;hash I–P" style="shape=cylinder3;html=1;whiteSpace=wrap;fillColor=#ffe6cc;strokeColor=#d79b00;size=14;" vertex="1" parent="1">
+          <mxGeometry x="950" y="170" width="90" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="p3c" value="shard 3&#xa;hash Q–Z" style="shape=cylinder3;html=1;whiteSpace=wrap;fillColor=#ffe6cc;strokeColor=#d79b00;size=14;" vertex="1" parent="1">
+          <mxGeometry x="1045" y="170" width="90" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="p3note" value="disjoint slices — no row on 2 nodes&#xa;⇒ writes AND storage scale" style="text;html=1;fontSize=11;fontStyle=2;fontColor=#2f5b26;" vertex="1" parent="1">
+          <mxGeometry x="855" y="280" width="280" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="summary" value="Key difference: replication multiplies the SAME data; sharding DIVIDES it.&#xa;Real systems use both: shards for scale, a replica per shard for HA." style="rounded=0;html=1;whiteSpace=wrap;fillColor=#f5f5f5;strokeColor=#666666;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="250" y="440" width="700" height="60" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
