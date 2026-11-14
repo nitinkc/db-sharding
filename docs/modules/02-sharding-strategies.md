@@ -69,4 +69,26 @@ rebalancer), so row-level mapping stays stable while placements move.
 
 ![Hash, range, directory, and geographic shard-key strategies](../diagrams/shard-key-strategies.svg)
 
+## Quick check
+
+<quiz>
+A table is sharded by `country`, which has 5 distinct values, across 8 shards. What happens?
+- [ ] Rows spread evenly because hashing fills gaps
+- [x] At least 3 shards stay empty forever
+- [ ] Citus automatically splits hot countries into extra shards
+- [ ] The table becomes a reference table
+
+**Cardinality** bounds how many shards can ever hold data — 5 values can fill at most 5 shards.
+</quiz>
+
+<quiz>
+You shard a table *by range* on `created_at`. What goes wrong on writes?
+- [ ] Writes are rejected because timestamps are immutable
+- [ ] Writes fan out to every shard
+- [x] Every insert hits the newest shard — a hotspot
+- [ ] Nothing; range sharding is always balanced
+
+Monotonic keys under range placement funnel all current writes into one shard. Hashing the timestamp fixes write spread but makes every dashboard query fan out — there is no free lunch.
+</quiz>
+
 **Next:** [Module 03 — Citus Architecture](03-citus-architecture.md)

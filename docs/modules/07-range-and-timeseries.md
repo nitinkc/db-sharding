@@ -157,4 +157,36 @@ seller-sharding experiment and making each layer independently observable.
 
 **Practice:** complete [Lab 6, Tasks 8–9](../labs/lab-06-shard-key-lab.md#task-81-range-placement-build-a-range-partitioned-table).
 
+## Quick check
+
+<quiz>
+A `RANGE` partition covers `event_time` from `2026-01-01` to `2026-02-01`. Which row lands in it?
+- [x] `event_time = '2026-01-01'` — the lower bound is included
+- [ ] `event_time = '2026-02-01'` — the upper bound is included
+- [ ] Both
+- [ ] Neither
+
+Lower bound included, upper bound excluded. `2026-02-01` belongs to the *next* partition.
+</quiz>
+
+<quiz>
+What is the key difference between a native Postgres partition and a Citus shard?
+- [ ] Partitions use hash routing; shards use range routing
+- [ ] Partitions can be pruned; shards cannot
+- [x] Partition children live on the same node — they add no machines; shards live across workers
+- [ ] There is no difference — the terms are interchangeable
+
+Partitioning splits a table inside one node; sharding distributes slices across nodes. You can combine them deliberately (a distributed table whose shards are themselves partitioned).
+</quiz>
+
+<quiz>
+A daily-partitioned `order_events` table gets a query for `event_time >= now() - interval '7 days'`. What does pruning do?
+- [ ] Moves old partitions to cheaper storage
+- [x] Skips scanning partitions whose bounds can't match the filter
+- [ ] Routes the query to a single worker
+- [ ] Builds an index on the fly
+
+Partition pruning is the read-side win: irrelevant children are excluded at plan time, like shard pruning on the distributed side.
+</quiz>
+
 **Next:** [Module 08 — Capstone](08-capstone.md)

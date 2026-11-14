@@ -88,4 +88,26 @@ spanning shards are coordinated with **two-phase commit** (2PC) to stay atomic �
 supported, but slower and with more failure modes. Design so your hot
 transactions stay single-shard.
 
+## Quick check
+
+<quiz>
+A query has `WHERE seller_id = 42` on a table distributed by `seller_id`. How does Citus execute it?
+- [ ] Scatter-gather across all workers
+- [x] Router query to the single shard holding that value
+- [ ] It runs entirely on the coordinator
+- [ ] It is rejected — point lookups aren't supported
+
+Equality on the distribution column lets the coordinator compute the shard and route to one node. Any other filter fans out.
+</quiz>
+
+<quiz>
+What keeps a transaction spanning multiple shards atomic in Citus?
+- [ ] Eventual consistency
+- [ ] Reference tables
+- [ ] The rebalancer
+- [x] Two-phase commit (2PC)
+
+2PC works but is slower and adds failure modes — design so hot transactions stay single-shard.
+</quiz>
+
 **Next:** [Module 06 — Resharding & Limits](06-resharding-and-limits.md)

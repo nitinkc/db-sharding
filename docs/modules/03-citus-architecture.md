@@ -81,4 +81,26 @@ column run *inside* the worker as local joins (Lab 6, Task 6).
 `colocate_with := 'sellers'` inherits both the shard count and placement —
 which is why you can't pass `shard_count` alongside it.
 
+## Quick check
+
+<quiz>
+What physically lives on each worker for a `reference` table?
+- [ ] One shard of the table
+- [ ] Only the metadata row in `citus_tables`
+- [x] A full copy of the table
+- [ ] Nothing — reference tables live on the coordinator only
+
+Reference tables are small lookups/dimensions copied to **every** worker so joins stay local. Distributed tables are sharded; local tables exist only on the coordinator.
+</quiz>
+
+<quiz>
+In Citus terms, what is a *placement*?
+- [ ] The hash-token range that defines a shard
+- [x] A physical copy of a shard on a node
+- [ ] A partition of a range-sharded table
+- [ ] A registered worker in `pg_dist_node`
+
+A **shard** is the logical slice (a token range in `pg_dist_shard`); a **placement** is a physical copy of it on a node (`pg_dist_shard_placement`). Replication factor 1 ⇒ one placement per shard.
+</quiz>
+
 **Next:** [Module 04 — Choosing a Shard Key](04-choosing-a-shard-key.md)

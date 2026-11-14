@@ -59,4 +59,26 @@ deliberately.
 - Metadata lives on the coordinator: it's a planning SPOF (mitigate with HA on
   the coordinator itself).
 
+## Quick check
+
+<quiz>
+You add a worker and run `rebalance_table_shards()`. What changes?
+- [ ] The number of shards increases
+- [ ] Every row is re-routed through the shard-key hash
+- [x] Whole shards move to the new node; shard count and key are unchanged
+- [ ] The table is undistributed and recreated
+
+Rebalancing moves *placements*, not rows — cheap per row. Changing the shard count or key is *resharding*: every row gets re-routed.
+</quiz>
+
+<quiz>
+A "celebrity seller" overloads one shard even under a good shard key. What does Citus offer?
+- [x] Tenant isolation — split that tenant onto its own dedicated shard
+- [ ] Convert the table to a reference table
+- [ ] Increase the replication factor
+- [ ] Nothing — hotspots are unavoidable
+
+`isolate_tenant_to_new_shard` gives the noisy neighbor a dedicated shard; the general pattern is shard splitting.
+</quiz>
+
 **Next:** [Module 07 — Partitioning & Time-Series](07-range-and-timeseries.md)

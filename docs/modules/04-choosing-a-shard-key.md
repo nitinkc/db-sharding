@@ -61,4 +61,26 @@ via the colocation group.
 
 ![Hashing seller IDs into shards placed across worker nodes](../diagrams/hash-placement.svg)
 
+## Quick check
+
+<quiz>
+Why is `listings` keyed `(seller_id, listing_id)` instead of just `listing_id`?
+- [ ] Composite keys are faster in Postgres
+- [x] Every UNIQUE/PRIMARY KEY on a distributed table must include the distribution column
+- [ ] `listing_id` alone is not unique
+- [ ] Citus requires two-column primary keys
+
+Uniqueness can only be checked inside a shard without a cluster-wide lock, so Citus enforces that constraints include the shard key.
+</quiz>
+
+<quiz>
+Which of the five shard-key criteria does `country` fail for the bazaar workload? (Select all that apply.)
+- [x] Cardinality — only ~5 distinct values
+- [x] Uniformity — one country holds ~60% of rows
+- [ ] Immutability — countries never change, so it passes
+- [ ] Query alignment — it passes because queries filter on it anyway
+
+`country` fails the two properties that spread load: too few values and a skewed distribution. `seller_id` passes both.
+</quiz>
+
 **Next:** [Module 05 — Query Routing](05-query-routing.md)

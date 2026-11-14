@@ -66,4 +66,26 @@ query plans in the labs.
 
 Sharding is a *scaling* tool, not a default architecture.
 
+## Quick check
+
+<quiz>
+Your dataset fits comfortably on one well-sized node and the bottleneck is read traffic. What is the best move?
+- [ ] Shard by `seller_id` anyway
+- [x] Add read replicas or a cache
+- [ ] Reshard onto more nodes
+- [ ] Convert the tables to reference tables
+
+Sharding is a *scaling* tool, not a default architecture. Read bottlenecks are what replicas and caches are for.
+</quiz>
+
+<quiz>
+Which costs does sharding introduce? (Select all that apply.)
+- [x] The shard key becomes load-bearing — a bad choice causes hotspots or fan-out
+- [x] Cross-shard joins require data movement and cross-shard transactions need 2PC
+- [x] Resharding is a migration, not a config change
+- [ ] Uniqueness constraints stop working entirely, even inside a shard
+
+Uniqueness still works **inside** a shard (or when the constraint includes the shard key) — it just can't be enforced cluster-wide.
+</quiz>
+
 **Next:** [Module 02 — Sharding Strategies](02-sharding-strategies.md)

@@ -58,19 +58,32 @@ Rebuild from scratch anytime: `./scripts/reset.sh`.
 
 ### Modules (theory)
 
+Start with [Module 00 · Environment setup](modules/00-environment-setup.md) —
+Docker, compose, and connecting to the cluster.
+
+#### Sharding
+
 | # | Module | You'll learn |
 | --- | --- | --- |
-| 00 | [Environment setup](modules/00-environment-setup.md) | Docker, compose, connect |
 | 01 | [Why sharding?](modules/01-why-sharding.md) | vs replication & partitioning, costs, when not to |
 | 02 | [Sharding strategies](modules/02-sharding-strategies.md) | hash, range, directory, geo; cardinality; hotspots |
 | 03 | [Citus architecture](modules/03-citus-architecture.md) | coordinator/workers, shards, placements, metadata |
 | 04 | [Choosing a shard key](modules/04-choosing-a-shard-key.md) | the 5 criteria, PK rule, immutability, shard count |
 | 05 | [Query routing](modules/05-query-routing.md) | router vs scatter-gather, EXPLAIN, 2PC |
 | 06 | [Resharding & limits](modules/06-resharding-and-limits.md) | rebalancing, tenant isolation, CAP |
+
+#### Partitioning
+
+| # | Module | You'll learn |
+| --- | --- | --- |
 | 07 | [Partitioning & time-series](modules/07-range-and-timeseries.md) | native partitions vs shards, pruning, bounds, retention |
-| 08 | [Capstone](modules/08-capstone.md) | design the orders workload yourself |
+
+Finish with [Module 08 · Capstone](modules/08-capstone.md) — design the orders
+workload yourself.
 
 ### Labs (hands-on — do them in order)
+
+#### Sharding
 
 | Lab | Covers |
 | --- | --- |
@@ -79,7 +92,13 @@ Rebuild from scratch anytime: `./scripts/reset.sh`.
 | [Lab 3](labs/lab-03-distribute-sellers.md) | `create_distributed_table`, rows preserved |
 | [Lab 4](labs/lab-04-shard-placement.md) | shards vs placements, metadata |
 | [Lab 5](labs/lab-05-inside-a-shard.md) | per-shard row counts, deterministic routing |
-| [Lab 6](labs/lab-06-shard-key-lab.md) | **the big one**: hash placement, skew, query routing under two shard keys, co-located joins, shard-key immutability, range partitions, strategy selection |
+| [Lab 6](labs/lab-06-shard-key-lab.md) (Tasks 1–7) | **the big one**: hash placement, skew, query routing under two shard keys, co-located joins, shard-key immutability |
+
+#### Partitioning
+
+| Lab | Covers |
+| --- | --- |
+| [Lab 6](labs/lab-06-shard-key-lab.md) (Tasks 8–9) | range partitions, partition pruning, retention, strategy selection |
 
 Answer keys live in [solutions](solutions/index.md) — try the tasks first.
 
