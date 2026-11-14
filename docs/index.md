@@ -67,7 +67,7 @@ Rebuild from scratch anytime: `./scripts/reset.sh`.
 | 04 | [Choosing a shard key](modules/04-choosing-a-shard-key.md) | the 5 criteria, PK rule, immutability, shard count |
 | 05 | [Query routing](modules/05-query-routing.md) | router vs scatter-gather, EXPLAIN, 2PC |
 | 06 | [Resharding & limits](modules/06-resharding-and-limits.md) | rebalancing, tenant isolation, CAP |
-| 07 | [Range & time-series](modules/07-range-and-timeseries.md) | pruning vs hot shard, retention |
+| 07 | [Partitioning & time-series](modules/07-range-and-timeseries.md) | native partitions vs shards, pruning, bounds, retention |
 | 08 | [Capstone](modules/08-capstone.md) | design the orders workload yourself |
 
 ### Labs (hands-on — do them in order)

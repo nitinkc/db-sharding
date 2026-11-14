@@ -328,6 +328,15 @@ machines — not an in-place update.)
 
 ## Task 8.1 — Range placement: build a range-partitioned table
 
+**Story so far:** seller storefront queries now route by `seller_id`, and related
+tables are co-located. Keep those tables unchanged. Bazaar's next requirement is
+event history: reports read time windows and old events will eventually expire.
+We will partition a new local table, then compare its routing with the sharding
+you already measured.
+
+Read [Module 07 — Partitioning](../modules/07-range-and-timeseries.md) alongside
+Tasks 8.1–8.4. Continue in this same `bazaar` database; do not reset the cluster.
+
 **Goal:** With **range placement**, each shard owns one continuous span of key
 values. Model this on the coordinator with a plain PostgreSQL table split into
 range partitions — each partition stands in for one range shard.
@@ -433,6 +442,76 @@ reads?
 
 ---
 
+## Task 8.3 — Connect partitions to the shard investigation
+
+**Goal:** repeat Lab 5's row-location and row-count checks, now for native
+partitions. These queries only inspect the table created in Task 8.1.
+
+```sql
+SELECT tableoid::regclass AS physical_partition, count(*) AS rows
+FROM order_events
+GROUP BY tableoid
+ORDER BY physical_partition::text;
+
+SELECT count(*) AS parent_rows FROM order_events;
+
+SELECT event_time, tableoid::regclass AS physical_partition
+FROM order_events
+WHERE event_time IN (
+  timestamp '2026-03-01 00:00:00',
+  timestamp '2026-03-02 00:00:00',
+  timestamp '2026-03-03 00:00:00'
+)
+ORDER BY event_time;
+```
+
+1. Do the physical child counts sum to the parent count, as shard counts did
+   for `sellers` in Lab 5?
+2. Which child holds an event exactly at midnight on March 2? Explain the
+   inclusive lower bound and exclusive upper bound.
+3. Do these children live on workers? Why would `pg_inherits`, rather than
+   `citus_shards`, describe this particular table's children?
+
+Now compare with Task 8.2's time-filtered plan:
+
+```sql
+EXPLAIN (COSTS OFF)
+SELECT * FROM order_events WHERE seller_id = 1;
+```
+
+**Question:** how many partitions remain in this plan? Explain why the same
+seller predicate that selected one Citus shard earlier cannot prune this table's
+time partitions. Distinguish partition pruning from index access within a child.
+
+## Task 8.4 — Plan retention without changing the lab state
+
+**Scenario:** Bazaar wants to retain events from March 2 onwards. Identify the
+whole partition whose upper bound is at or before that cutoff. Do not detach or
+drop anything: the next task and answer key still use all 22,000 rows.
+
+```sql
+SELECT count(*) AS rows_before_cutoff
+FROM order_events
+WHERE event_time < timestamp '2026-03-02';
+```
+
+Write down:
+
+1. The candidate partition, its row count, and the parent count that would be
+   visible after detaching it.
+2. How detaching an archive differs from dropping it. Would a row-by-row
+   `DELETE` be necessary if the entire interval expires?
+3. Why the open-ended March 3 partition prevents simply adding a March 4 daily
+   partition with overlapping bounds. What would you change in a production
+   partition schedule?
+4. If you later add `event_id` and a primary key, why must a primary key on this
+   partitioned parent include `event_time`? Does that ensure `event_id` alone is
+   unique across all days?
+
+**Checkpoint:** seller tables remain distributed as before; `order_events` is
+still local, partitioned, and contains 22,000 rows. You have changed the storage
+strategy for a different workload, not undone the earlier labs.
+
 ## Task 9 — Choosing a strategy: pick a placement for weekly reports
 
 **Scenario:** Bazaar adds an `events` table recording every action buyers
@@ -465,7 +544,12 @@ You should now be able to explain, with evidence from this cluster:
   `listing_id` fans out to every shard,
 - what co-location buys you in a join,
 - why shard keys are effectively immutable,
-- why range placement is perfect for time-based reads and terrible for
-  balanced writes.
+- how native partitions differ from worker shards,
+- how partition bounds and pruning serve time-window reads without adding nodes,
+- why current writes concentrate in the newest range,
+- how retention and partitioned-parent keys affect the design.
+
+**Next:** apply both layers in the [orders capstone](../modules/08-capstone.md).
+Keep this cluster state; the capstone reuses `sellers`.
 
 *Answers and expected output: [solutions/lab-06-solutions.md](../solutions/lab-06-solutions.md).*

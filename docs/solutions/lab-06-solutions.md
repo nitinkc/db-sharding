@@ -213,6 +213,47 @@ concentrates all *writes* on the single shard holding "now" — the hot-shard
 problem. Hash placement is the mirror image: perfectly balanced writes, but a
 time-range read must touch every shard.
 
+## Task 8.3 — physical children and pruning
+
+`tableoid::regclass` identifies the actual child storing each returned row.
+Expected counts from Task 8.1's seed are 1,000, 1,000, and 20,000; their sum is
+22,000, equal to the parent query. No second copy of these rows is stored in the
+partitioned parent.
+
+The midnight probes identify the March 1, March 2, and March 3 partitions
+respectively. March 2 midnight is excluded from the March 1 partition and
+included in the March 2 partition.
+
+These are local PostgreSQL children on the coordinator, described by
+`pg_inherits`. They are not Citus shard placements. The `seller_id = 1` plan
+retains all three children because that predicate supplies no bound on
+`event_time`. The exact scan nodes depend on indexes and planner decisions;
+the important observation is which child relations remain eligible.
+
+A time predicate can prune children even when each retained child uses a
+sequential scan. Conversely, a seller index can speed access inside each child
+without allowing time-based pruning. Shard routing, partition pruning, and index
+access are three distinct decisions.
+
+## Task 8.4 — retention and future bounds
+
+The candidate is `order_events_p2026_03_01`: its upper bound is March 2 and it
+contains 1,000 rows. Detaching it would leave 21,000 rows visible through the
+parent, while preserving the detached table as a standalone archive. Dropping
+the child removes its data; neither operation needs a row-by-row delete when
+the whole interval expires. Real operations still need backup, lock, and
+retention planning. No detach or drop is performed in this lab.
+
+The March 3 partition extends to `MAXVALUE`, so a new March 4 range would overlap
+it and be rejected. Production daily rotation uses bounded future partitions,
+or carefully reorganizes the catch-all and its rows before adding new ranges.
+
+A native partitioned-parent primary key must include `event_time` so its
+uniqueness can be enforced within partitions. `(event_time, event_id)` permits
+the same `event_id` at different timestamps, so it does not establish global
+uniqueness of `event_id` alone. If the table is also distributed by `seller_id`,
+Citus's distribution-key requirements must be satisfied as well.
+
 ## Task 9 — strategy for weekly reports
 
 **Answer:** **Range placement on `event_time`.** The weekly report reads one

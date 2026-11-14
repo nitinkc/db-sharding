@@ -80,8 +80,19 @@ Run the DDL + seed on the coordinator first (they're local tables).
 
 ## Stretch goals
 
-- Convert `orders` to a partitioned table on `created_at` and discuss which
-  layer (distribution vs partition) handles which concern.
+- Extend [Lab 6's partitioning investigation](../labs/lab-06-shard-key-lab.md#task-83-connect-partitions-to-the-shard-investigation)
+  into a design for time-partitioned `orders`. Plan it separately before changing
+  the working capstone tables: retain seller distribution, choose bounded monthly
+  ranges, and compare seller-only, time-only, and seller-plus-time queries.
+  Explain which layer prunes partitions and which routes worker tasks.
+- Identify how partitioning `orders` on `created_at` changes the existing
+  `(seller_id, order_id)` primary key: a native partitioned-parent key must also
+  include the time key. Explain the consequences for `order_items`, whose current
+  schema has no order timestamp, and propose a compatible key/join design rather
+  than assuming the original constraints work unchanged.
+- Write a retention plan for an expired month, including how archiving differs
+  from deleting and how related order items stay consistent. No destructive
+  retention operations are required for the capstone.
 - Make `countries` a reference table (`create_reference_table`) and explain
   when that beats distributing it.
 - Design a `buyer_id`-sharded alternative. What queries get faster, which get

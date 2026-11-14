@@ -63,7 +63,7 @@ nav:
       - '04 · Choosing a shard key': modules/04-choosing-a-shard-key.md
       - '05 · Query routing': modules/05-query-routing.md
       - '06 · Resharding & limits': modules/06-resharding-and-limits.md
-      - '07 · Range & time-series': modules/07-range-and-timeseries.md
+      - '07 · Partitioning & time-series': modules/07-range-and-timeseries.md
       - '08 · Capstone': modules/08-capstone.md
   - Labs:
       - '1 · Orientation': labs/lab-01-orientation.md

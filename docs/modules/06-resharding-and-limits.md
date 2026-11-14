@@ -59,4 +59,4 @@ deliberately.
 - Metadata lives on the coordinator: it's a planning SPOF (mitigate with HA on
   the coordinator itself).
 
-**Next:** [Module 07 — Range & Time-Series](07-range-and-timeseries.md)
+**Next:** [Module 07 — Partitioning & Time-Series](07-range-and-timeseries.md)
