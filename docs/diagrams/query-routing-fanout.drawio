@@ -10,21 +10,21 @@
         <mxCell id="R" value="BAD: WHERE off shard key → FAN-OUT (Task Count: 8)" style="text;html=1;fontSize=14;fontStyle=1;fontColor=#b85450;" vertex="1" parent="1">
           <mxGeometry x="680" y="20" width="540" height="24" as="geometry"/>
         </mxCell>
-        <mxCell id="lq" value="SELECT * FROM listings&#xa;WHERE seller_id = 1&#xa;&#xa;listings sharded BY seller_id" style="rounded=1;html=1;whiteSpace=wrap;fillColor=#dae8fc;strokeColor=#6c8ebf;fontFamily=Courier New;fontSize=11;" vertex="1" parent="1">
+        <mxCell id="lq" value="SELECT * FROM vehicles&#xa;WHERE fleet_id = 1&#xa;&#xa;vehicles sharded BY fleet_id" style="rounded=1;html=1;whiteSpace=wrap;fillColor=#dae8fc;strokeColor=#6c8ebf;fontFamily=Courier New;fontSize=11;" vertex="1" parent="1">
           <mxGeometry x="80" y="60" width="220" height="90" as="geometry"/>
         </mxCell>
         <mxCell id="lc" value="COORDINATOR&#xa;hash(1) → shard …032 → worker1" style="rounded=1;html=1;whiteSpace=wrap;fillColor=#fff2cc;strokeColor=#d6b656;verticalAlign=top;spacingTop=6;" vertex="1" parent="1">
           <mxGeometry x="80" y="200" width="220" height="70" as="geometry"/>
         </mxCell>
-        <mxCell id="lt" value="TASK 1 of 1&#xa;SELECT … FROM listings_102032" style="shape=cylinder3;html=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;size=14;" vertex="1" parent="1">
+        <mxCell id="lt" value="TASK 1 of 1&#xa;SELECT … FROM vehicles_102032" style="shape=cylinder3;html=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;size=14;" vertex="1" parent="1">
           <mxGeometry x="360" y="200" width="200" height="70" as="geometry"/>
         </mxCell>
         <mxCell id="le" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeWidth=3;strokeColor=#2f5b26;label=ONE task" edge="1" parent="1" source="lc" target="lt"><mxGeometry relative="1" as="geometry"/></mxCell>
         <mxCell id="le0" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;" edge="1" parent="1" source="lq" target="lc"><mxGeometry relative="1" as="geometry"/></mxCell>
-        <mxCell id="rq" value="SELECT * FROM listings&#xa;WHERE seller_id = 1&#xa;&#xa;listings sharded BY listing_id" style="rounded=1;html=1;whiteSpace=wrap;fillColor=#dae8fc;strokeColor=#6c8ebf;fontFamily=Courier New;fontSize=11;" vertex="1" parent="1">
+        <mxCell id="rq" value="SELECT * FROM vehicles&#xa;WHERE fleet_id = 1&#xa;&#xa;vehicles sharded BY vehicle_id" style="rounded=1;html=1;whiteSpace=wrap;fillColor=#dae8fc;strokeColor=#6c8ebf;fontFamily=Courier New;fontSize=11;" vertex="1" parent="1">
           <mxGeometry x="700" y="60" width="220" height="90" as="geometry"/>
         </mxCell>
-        <mxCell id="rc" value="COORDINATOR&#xa;can't route — seller_id isn't the key" style="rounded=1;html=1;whiteSpace=wrap;fillColor=#fff2cc;strokeColor=#d6b656;verticalAlign=top;spacingTop=6;" vertex="1" parent="1">
+        <mxCell id="rc" value="COORDINATOR&#xa;can't route — fleet_id isn't the key" style="rounded=1;html=1;whiteSpace=wrap;fillColor=#fff2cc;strokeColor=#d6b656;verticalAlign=top;spacingTop=6;" vertex="1" parent="1">
           <mxGeometry x="700" y="200" width="220" height="70" as="geometry"/>
         </mxCell>
         <mxCell id="rt1" value="task→shard1" style="shape=cylinder3;html=1;whiteSpace=wrap;fillColor=#f8cecc;strokeColor=#b85450;size=12;fontSize=10;" vertex="1" parent="1">

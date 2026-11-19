@@ -6,31 +6,31 @@
 
 ```sql
 SELECT table_name, citus_table_type, distribution_column, shard_count
-FROM citus_tables WHERE table_name = 'sellers'::regclass;
+FROM citus_tables WHERE table_name = 'fleets'::regclass;
 -- 0 rows
 ```
 
 **2. `citus_shards`:**
 
 ```sql
-SELECT * FROM citus_shards WHERE table_name = 'sellers'::regclass;
+SELECT * FROM citus_shards WHERE table_name = 'fleets'::regclass;
 -- 0 rows
 ```
 
 **3. Row count through the coordinator:**
 
 ```sql
-SELECT count(*) FROM sellers;
+SELECT count(*) FROM fleets;
 -- 10000
 ```
 
 ## Answer
 
-`sellers` is a **local table**. Citus does not manage it: it appears in neither
+`fleets` is a **local table**. Citus does not manage it: it appears in neither
 `citus_tables` nor `citus_shards`, yet all 10,000 rows are readable through the
 coordinator — because the whole table physically lives on the coordinator as an
 ordinary PostgreSQL table. No worker holds any part of it.
 
-(If you also looked at `sellers_by_country`, it *does* appear in
-`citus_tables` as `distributed` on `country` — the bootstrap script
-pre-distributed that one.)
+(In fact, at this point `citus_tables` returns **zero rows** for every table —
+the bootstrap script distributes nothing. Every table you meet in Labs 1–2 is
+local; you distribute the first one yourself in Lab 3.)

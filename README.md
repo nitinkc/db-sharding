@@ -1,7 +1,8 @@
 # Database Sharding — A Hands-On Course
 
-Learn database sharding with a real three-node Citus cluster, a seeded marketplace
-database, theory modules, guided labs, and inline diagrams.
+Learn database sharding with a real four-node Citus cluster, a seeded fleet
+telematics and geofencing platform (PostGIS), theory modules, guided labs, and
+inline diagrams.
 
 ## Documentation
 
@@ -10,7 +11,7 @@ All course content lives under [`docs/`](docs/index.md):
 - [Course overview and syllabus](docs/index.md)
 - [Environment setup](docs/modules/00-environment-setup.md)
 - [Lab 1 — Orientation](docs/labs/lab-01-orientation.md)
-- [Lab solutions](docs/solutions/index.md)
+- [Lab solutions](docs/solutions/)
 
 Preview the searchable MkDocs Material site with [uv](https://docs.astral.sh/uv/):
 
@@ -31,10 +32,10 @@ Requires Docker Desktop. Run these commands from the repository root:
 
 ```bash
 ./scripts/bootstrap.sh
-psql -h localhost -p 5432 -U postgres -d bazaar
+psql -h localhost -p 5432 -U postgres -d fleet
 ```
 
-Without local `psql`, use `docker exec -it bazaar-coordinator psql -U postgres -d bazaar`.
+Without local `psql`, use `docker exec -it fleet-coordinator psql -U postgres -d fleet`.
 The no-password configuration is only for this local lab.
 
 ## Repository layout
@@ -46,9 +47,12 @@ docs/
   labs/                    guided exercises
   solutions/               answer keys and expected output
   diagrams/                SVG images and editable draw.io sources
-db/                        coordinator and worker initialization SQL
+db/
+  Dockerfile               postgres:16 + Citus 13.4 + PostGIS (multi-arch)
+  coordinator-init/        schema and seed data (first boot only)
+  worker-init/             worker extension setup
 scripts/                   cluster bootstrap and reset commands
-docker-compose.yml         local three-node Citus cluster
+docker-compose.yml         local four-node Citus cluster
 mkdocs.yml                 documentation site configuration
 pyproject.toml             documentation dependencies managed by uv
 ```

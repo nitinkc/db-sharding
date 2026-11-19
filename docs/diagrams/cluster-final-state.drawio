@@ -1,0 +1,196 @@
+<mxfile host="Electron">
+  <diagram id="cluster-final-state" name="Cluster Final State">
+    <mxGraphModel dx="900" dy="650" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1240" pageHeight="900" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="title" value="fleet cluster after Lab 7 — where every row lives" style="text;html=1;fontSize=18;fontStyle=1;align=center;" vertex="1" parent="1">
+          <mxGeometry x="270" y="16" width="700" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="notes" value="Reading this map:&#xa;• one cylinder = one shard (a real table, e.g. fleets_102016)&#xa;• stacked cylinders in a slot = co-located — same hash range, same&#xa;  worker, so joins run on the worker itself&#xa;• vbr_* = vehicles_by_region shards; dashed = empty shard&#xa;• shard ids come from an example run — yours will differ numerically&#xa;• vehicle_telematics is a LOCAL table on the coordinator: native range&#xa;  partitions (pg_inherits), not Citus shard placements" style="rounded=0;html=1;whiteSpace=wrap;fillColor=#f5f5f5;strokeColor=#666666;align=left;verticalAlign=top;spacingTop=6;spacingLeft=8;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="40" y="60" width="360" height="120" as="geometry"/>
+        </mxCell>
+        <mxCell id="client" value="psql / app&#xa;psql -h localhost -p 5432 -U postgres -d fleet" style="shape=actor;html=1;whiteSpace=wrap;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="555" y="60" width="130" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="coord" value="COORDINATOR — fleet-coordinator&#xa;localhost:5432&#xa;&#xa;• cluster metadata: pg_dist_*, citus_tables, citus_shards&#xa;• plans queries, routes shard tasks, merges results&#xa;• holds NO distributed-table rows" style="rounded=1;html=1;whiteSpace=wrap;fillColor=#fff2cc;strokeColor=#d6b656;align=center;verticalAlign=top;spacingTop=8;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="430" y="170" width="380" height="200" as="geometry"/>
+        </mxCell>
+        <mxCell id="oe" value="vehicle_telematics — LOCAL · RANGE(recorded_at) · 22,000 rows" style="rounded=1;html=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#d6b656;align=center;verticalAlign=top;spacingTop=4;fontSize=10;fontStyle=2;" vertex="1" parent="1">
+          <mxGeometry x="445" y="285" width="350" height="75" as="geometry"/>
+        </mxCell>
+        <mxCell id="oe1" value="p2026_03_01&#xa;1,000 rows" style="shape=cylinder3;html=1;whiteSpace=wrap;fillColor=#dae8fc;strokeColor=#6c8ebf;size=8;fontSize=9;" vertex="1" parent="1">
+          <mxGeometry x="455" y="312" width="105" height="42" as="geometry"/>
+        </mxCell>
+        <mxCell id="oe2" value="p2026_03_02&#xa;1,000 rows" style="shape=cylinder3;html=1;whiteSpace=wrap;fillColor=#dae8fc;strokeColor=#6c8ebf;size=8;fontSize=9;" vertex="1" parent="1">
+          <mxGeometry x="567" y="312" width="105" height="42" as="geometry"/>
+        </mxCell>
+        <mxCell id="oe3" value="p2026_03_03 →&#xa;20,000 rows (hot)" style="shape=cylinder3;html=1;whiteSpace=wrap;fillColor=#dae8fc;strokeColor=#6c8ebf;size=8;fontSize=9;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="679" y="312" width="108" height="42" as="geometry"/>
+        </mxCell>
+        <mxCell id="w1" value="WORKER 1 — fleet-worker1 · localhost:5433" style="rounded=1;html=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;verticalAlign=top;spacingTop=8;" vertex="1" parent="1">
+          <mxGeometry x="30" y="430" width="360" height="400" as="geometry"/>
+        </mxCell>
+        <mxCell id="w1sub1" value="co-located shard slots — shard key fleet_id (colocation_id 3)&#xa;fleets 10k · vehicles 40k · trips 50k rows, spread by hash" style="text;html=1;fontSize=11;fontStyle=2;align=left;" vertex="1" parent="1">
+          <mxGeometry x="45" y="460" width="330" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="w1slot1" value="hash range 1/8" style="rounded=1;html=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#999999;verticalAlign=top;spacingTop=4;fontSize=9;fontStyle=2;" vertex="1" parent="1">
+          <mxGeometry x="45" y="492" width="105" height="162" as="geometry"/>
+        </mxCell>
+        <mxCell id="w1s1a" value="fleets_102016" style="shape=cylinder3;html=1;whiteSpace=wrap;fillColor=#e1d5e7;strokeColor=#9673a6;size=8;fontSize=9;" vertex="1" parent="1">
+          <mxGeometry x="51" y="518" width="93" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="w1s1b" value="vehicles_102032" style="shape=cylinder3;html=1;whiteSpace=wrap;fillColor=#ffe6cc;strokeColor=#d79b00;size=8;fontSize=9;" vertex="1" parent="1">
+          <mxGeometry x="51" y="564" width="93" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="w1s1c" value="trips_102040" style="shape=cylinder3;html=1;whiteSpace=wrap;fillColor=#f8cecc;strokeColor=#b85450;size=8;fontSize=9;" vertex="1" parent="1">
+          <mxGeometry x="51" y="610" width="93" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="w1slot2" value="hash range 3/8" style="rounded=1;html=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#999999;verticalAlign=top;spacingTop=4;fontSize=9;fontStyle=2;" vertex="1" parent="1">
+          <mxGeometry x="155" y="492" width="105" height="162" as="geometry"/>
+        </mxCell>
+        <mxCell id="w1s2a" value="fleets_102018" style="shape=cylinder3;html=1;whiteSpace=wrap;fillColor=#e1d5e7;strokeColor=#9673a6;size=8;fontSize=9;" vertex="1" parent="1">
+          <mxGeometry x="161" y="518" width="93" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="w1s2b" value="vehicles_102034" style="shape=cylinder3;html=1;whiteSpace=wrap;fillColor=#ffe6cc;strokeColor=#d79b00;size=8;fontSize=9;" vertex="1" parent="1">
+          <mxGeometry x="161" y="564" width="93" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="w1s2c" value="trips_102042" style="shape=cylinder3;html=1;whiteSpace=wrap;fillColor=#f8cecc;strokeColor=#b85450;size=8;fontSize=9;" vertex="1" parent="1">
+          <mxGeometry x="161" y="610" width="93" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="w1slot3" value="hash range 4/8" style="rounded=1;html=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#999999;verticalAlign=top;spacingTop=4;fontSize=9;fontStyle=2;" vertex="1" parent="1">
+          <mxGeometry x="265" y="492" width="105" height="162" as="geometry"/>
+        </mxCell>
+        <mxCell id="w1s3a" value="fleets_102019" style="shape=cylinder3;html=1;whiteSpace=wrap;fillColor=#e1d5e7;strokeColor=#9673a6;size=8;fontSize=9;" vertex="1" parent="1">
+          <mxGeometry x="271" y="518" width="93" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="w1s3b" value="vehicles_102035" style="shape=cylinder3;html=1;whiteSpace=wrap;fillColor=#ffe6cc;strokeColor=#d79b00;size=8;fontSize=9;" vertex="1" parent="1">
+          <mxGeometry x="271" y="564" width="93" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="w1s3c" value="trips_102043" style="shape=cylinder3;html=1;whiteSpace=wrap;fillColor=#f8cecc;strokeColor=#b85450;size=8;fontSize=9;" vertex="1" parent="1">
+          <mxGeometry x="271" y="610" width="93" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="w1sub2" value="vehicles_by_region — shard key region (colocation_id 2)&#xa;8 shards total · low cardinality → only 4 hold rows · 'NA' shard is skewed" style="text;html=1;fontSize=11;fontStyle=2;align=left;" vertex="1" parent="1">
+          <mxGeometry x="45" y="668" width="330" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="w1c1" value="vbr_102008&#xa;1,000 rows" style="shape=cylinder3;html=1;whiteSpace=wrap;fillColor=#b1ddf0;strokeColor=#10739e;size=9;fontSize=9;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="45" y="700" width="105" height="62" as="geometry"/>
+        </mxCell>
+        <mxCell id="w1c2" value="vbr_102010&#xa;'NA' — 6,000&#xa;(60% of rows)" style="shape=cylinder3;html=1;whiteSpace=wrap;fillColor=#b1ddf0;strokeColor=#10739e;size=9;fontSize=9;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="159" y="700" width="105" height="62" as="geometry"/>
+        </mxCell>
+        <mxCell id="w1c3" value="vbr_102013&#xa;empty" style="shape=cylinder3;html=1;whiteSpace=wrap;fillColor=none;strokeColor=#999999;dashed=1;fontColor=#999999;size=9;fontSize=9;" vertex="1" parent="1">
+          <mxGeometry x="273" y="700" width="105" height="62" as="geometry"/>
+        </mxCell>
+        <mxCell id="w2" value="WORKER 2 — fleet-worker2 · localhost:5434" style="rounded=1;html=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;verticalAlign=top;spacingTop=8;" vertex="1" parent="1">
+          <mxGeometry x="440" y="430" width="360" height="400" as="geometry"/>
+        </mxCell>
+        <mxCell id="w2sub1" value="co-located shard slots — shard key fleet_id (colocation_id 3)&#xa;fleets 10k · vehicles 40k · trips 50k rows, spread by hash" style="text;html=1;fontSize=11;fontStyle=2;align=left;" vertex="1" parent="1">
+          <mxGeometry x="455" y="460" width="330" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="w2slot1" value="hash range 2/8" style="rounded=1;html=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#999999;verticalAlign=top;spacingTop=4;fontSize=9;fontStyle=2;" vertex="1" parent="1">
+          <mxGeometry x="455" y="492" width="105" height="162" as="geometry"/>
+        </mxCell>
+        <mxCell id="w2s1a" value="fleets_102017" style="shape=cylinder3;html=1;whiteSpace=wrap;fillColor=#e1d5e7;strokeColor=#9673a6;size=8;fontSize=9;" vertex="1" parent="1">
+          <mxGeometry x="461" y="518" width="93" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="w2s1b" value="vehicles_102033" style="shape=cylinder3;html=1;whiteSpace=wrap;fillColor=#ffe6cc;strokeColor=#d79b00;size=8;fontSize=9;" vertex="1" parent="1">
+          <mxGeometry x="461" y="564" width="93" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="w2s1c" value="trips_102041" style="shape=cylinder3;html=1;whiteSpace=wrap;fillColor=#f8cecc;strokeColor=#b85450;size=8;fontSize=9;" vertex="1" parent="1">
+          <mxGeometry x="461" y="610" width="93" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="w2slot2" value="hash range 6/8" style="rounded=1;html=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#999999;verticalAlign=top;spacingTop=4;fontSize=9;fontStyle=2;" vertex="1" parent="1">
+          <mxGeometry x="565" y="492" width="105" height="162" as="geometry"/>
+        </mxCell>
+        <mxCell id="w2s2a" value="fleets_102021" style="shape=cylinder3;html=1;whiteSpace=wrap;fillColor=#e1d5e7;strokeColor=#9673a6;size=8;fontSize=9;" vertex="1" parent="1">
+          <mxGeometry x="571" y="518" width="93" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="w2s2b" value="vehicles_102037" style="shape=cylinder3;html=1;whiteSpace=wrap;fillColor=#ffe6cc;strokeColor=#d79b00;size=8;fontSize=9;" vertex="1" parent="1">
+          <mxGeometry x="571" y="564" width="93" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="w2s2c" value="trips_102045" style="shape=cylinder3;html=1;whiteSpace=wrap;fillColor=#f8cecc;strokeColor=#b85450;size=8;fontSize=9;" vertex="1" parent="1">
+          <mxGeometry x="571" y="610" width="93" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="w2slot3" value="hash range 7/8" style="rounded=1;html=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#999999;verticalAlign=top;spacingTop=4;fontSize=9;fontStyle=2;" vertex="1" parent="1">
+          <mxGeometry x="675" y="492" width="105" height="162" as="geometry"/>
+        </mxCell>
+        <mxCell id="w2s3a" value="fleets_102022" style="shape=cylinder3;html=1;whiteSpace=wrap;fillColor=#e1d5e7;strokeColor=#9673a6;size=8;fontSize=9;" vertex="1" parent="1">
+          <mxGeometry x="681" y="518" width="93" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="w2s3b" value="vehicles_102038" style="shape=cylinder3;html=1;whiteSpace=wrap;fillColor=#ffe6cc;strokeColor=#d79b00;size=8;fontSize=9;" vertex="1" parent="1">
+          <mxGeometry x="681" y="564" width="93" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="w2s3c" value="trips_102046" style="shape=cylinder3;html=1;whiteSpace=wrap;fillColor=#f8cecc;strokeColor=#b85450;size=8;fontSize=9;" vertex="1" parent="1">
+          <mxGeometry x="681" y="610" width="93" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="w2sub2" value="vehicles_by_region — shard key region (colocation_id 2)&#xa;5 distinct values → at most 5 non-empty; collisions leave shards empty" style="text;html=1;fontSize=11;fontStyle=2;align=left;" vertex="1" parent="1">
+          <mxGeometry x="455" y="668" width="330" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="w2c1" value="vbr_102012&#xa;2,500 rows" style="shape=cylinder3;html=1;whiteSpace=wrap;fillColor=#b1ddf0;strokeColor=#10739e;size=9;fontSize=9;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="455" y="700" width="105" height="62" as="geometry"/>
+        </mxCell>
+        <mxCell id="w2c2" value="vbr_102011&#xa;500 rows" style="shape=cylinder3;html=1;whiteSpace=wrap;fillColor=#b1ddf0;strokeColor=#10739e;size=9;fontSize=9;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="569" y="700" width="105" height="62" as="geometry"/>
+        </mxCell>
+        <mxCell id="w2c3" value="vbr_102009&#xa;empty" style="shape=cylinder3;html=1;whiteSpace=wrap;fillColor=none;strokeColor=#999999;dashed=1;fontColor=#999999;size=9;fontSize=9;" vertex="1" parent="1">
+          <mxGeometry x="683" y="700" width="105" height="62" as="geometry"/>
+        </mxCell>
+        <mxCell id="w3" value="WORKER 3 — fleet-worker3 · localhost:5435" style="rounded=1;html=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;verticalAlign=top;spacingTop=8;" vertex="1" parent="1">
+          <mxGeometry x="850" y="430" width="360" height="400" as="geometry"/>
+        </mxCell>
+        <mxCell id="w3sub1" value="co-located shard slots — shard key fleet_id (colocation_id 3)&#xa;fleets 10k · vehicles 40k · trips 50k rows, spread by hash" style="text;html=1;fontSize=11;fontStyle=2;align=left;" vertex="1" parent="1">
+          <mxGeometry x="865" y="460" width="330" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="w3slot1" value="hash range 5/8" style="rounded=1;html=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#999999;verticalAlign=top;spacingTop=4;fontSize=9;fontStyle=2;" vertex="1" parent="1">
+          <mxGeometry x="865" y="492" width="105" height="162" as="geometry"/>
+        </mxCell>
+        <mxCell id="w3s1a" value="fleets_102020" style="shape=cylinder3;html=1;whiteSpace=wrap;fillColor=#e1d5e7;strokeColor=#9673a6;size=8;fontSize=9;" vertex="1" parent="1">
+          <mxGeometry x="871" y="518" width="93" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="w3s1b" value="vehicles_102036" style="shape=cylinder3;html=1;whiteSpace=wrap;fillColor=#ffe6cc;strokeColor=#d79b00;size=8;fontSize=9;" vertex="1" parent="1">
+          <mxGeometry x="871" y="564" width="93" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="w3s1c" value="trips_102044" style="shape=cylinder3;html=1;whiteSpace=wrap;fillColor=#f8cecc;strokeColor=#b85450;size=8;fontSize=9;" vertex="1" parent="1">
+          <mxGeometry x="871" y="610" width="93" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="w3slot2" value="hash range 8/8" style="rounded=1;html=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#999999;verticalAlign=top;spacingTop=4;fontSize=9;fontStyle=2;" vertex="1" parent="1">
+          <mxGeometry x="975" y="492" width="105" height="162" as="geometry"/>
+        </mxCell>
+        <mxCell id="w3s2a" value="fleets_102023" style="shape=cylinder3;html=1;whiteSpace=wrap;fillColor=#e1d5e7;strokeColor=#9673a6;size=8;fontSize=9;" vertex="1" parent="1">
+          <mxGeometry x="981" y="518" width="93" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="w3s2b" value="vehicles_102039" style="shape=cylinder3;html=1;whiteSpace=wrap;fillColor=#ffe6cc;strokeColor=#d79b00;size=8;fontSize=9;" vertex="1" parent="1">
+          <mxGeometry x="981" y="564" width="93" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="w3s2c" value="trips_102047" style="shape=cylinder3;html=1;whiteSpace=wrap;fillColor=#f8cecc;strokeColor=#b85450;size=8;fontSize=9;" vertex="1" parent="1">
+          <mxGeometry x="981" y="610" width="93" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="w3sub2" value="vehicles_by_region — shard key region (colocation_id 2)&#xa;this worker drew the empty shards — they can never receive rows" style="text;html=1;fontSize=11;fontStyle=2;align=left;" vertex="1" parent="1">
+          <mxGeometry x="865" y="668" width="330" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="w3c1" value="vbr_102014&#xa;empty" style="shape=cylinder3;html=1;whiteSpace=wrap;fillColor=none;strokeColor=#999999;dashed=1;fontColor=#999999;size=9;fontSize=9;" vertex="1" parent="1">
+          <mxGeometry x="865" y="700" width="105" height="62" as="geometry"/>
+        </mxCell>
+        <mxCell id="w3c2" value="vbr_102015&#xa;empty" style="shape=cylinder3;html=1;whiteSpace=wrap;fillColor=none;strokeColor=#999999;dashed=1;fontColor=#999999;size=9;fontSize=9;" vertex="1" parent="1">
+          <mxGeometry x="979" y="700" width="105" height="62" as="geometry"/>
+        </mxCell>
+        <mxCell id="e1" value="all SQL goes here" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeWidth=2;endArrow=block;fontSize=11;" edge="1" parent="1" source="client" target="coord">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e2" value="shard tasks" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeWidth=2;endArrow=block;fontSize=11;exitX=0.25;exitY=1;exitDx=0;exitDy=0;" edge="1" parent="1" source="coord" target="w1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e3" value="shard tasks" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeWidth=2;endArrow=block;fontSize=11;exitX=0.75;exitY=1;exitDx=0;exitDy=0;" edge="1" parent="1" source="coord" target="w2">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e4" value="shard tasks" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeWidth=2;endArrow=block;fontSize=11;exitX=0.9;exitY=1;exitDx=0;exitDy=0;" edge="1" parent="1" source="coord" target="w3">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="footer" value="replication factor = 1 → each shard exists on exactly one worker&#xa;query for fleet_id routes to ONE slot; query without it fans out to all 8 slots" style="rounded=0;html=1;whiteSpace=wrap;fillColor=#f5f5f5;strokeColor=#666666;align=center;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="390" y="845" width="460" height="40" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

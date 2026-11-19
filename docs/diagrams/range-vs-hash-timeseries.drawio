@@ -4,22 +4,22 @@
       <root>
         <mxCell id="0"/>
         <mxCell id="1" parent="0"/>
-        <mxCell id="title" value="order_events — range partitions vs hash shards" style="text;html=1;fontSize=16;fontStyle=1;" vertex="1" parent="1">
+        <mxCell id="title" value="vehicle_telematics — range partitions vs hash shards" style="text;html=1;fontSize=16;fontStyle=1;" vertex="1" parent="1">
           <mxGeometry x="330" y="20" width="600" height="26" as="geometry"/>
         </mxCell>
-        <mxCell id="stream" value="20,000 new events&#xa;event_time = now&#xa;(one every 2 s)" style="shape=cloud;html=1;whiteSpace=wrap;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+        <mxCell id="stream" value="20,000 new pings&#xa;recorded_at = now&#xa;(one every 2 s)" style="shape=cloud;html=1;whiteSpace=wrap;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
           <mxGeometry x="60" y="320" width="150" height="90" as="geometry"/>
         </mxCell>
         <mxCell id="Lp" value="RANGE placement" style="text;html=1;fontSize=14;fontStyle=1;" vertex="1" parent="1">
           <mxGeometry x="300" y="70" width="300" height="22" as="geometry"/>
         </mxCell>
-        <mxCell id="p1" value="p_2026_03_01&#xa;[03-01, 03-02)&#xa;1,000 rows&#xa;COLD" style="shape=cylinder3;html=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;size=13;" vertex="1" parent="1">
+        <mxCell id="p1" value="p_2026_11_14&#xa;[11-14, 11-15)&#xa;1,000 rows&#xa;COLD" style="shape=cylinder3;html=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;size=13;" vertex="1" parent="1">
           <mxGeometry x="280" y="120" width="140" height="90" as="geometry"/>
         </mxCell>
-        <mxCell id="p2" value="p_2026_03_02&#xa;[03-02, 03-03)&#xa;1,000 rows&#xa;COLD" style="shape=cylinder3;html=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;size=13;" vertex="1" parent="1">
+        <mxCell id="p2" value="p_2026_11_15&#xa;[11-15, 11-16)&#xa;1,000 rows&#xa;COLD" style="shape=cylinder3;html=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;size=13;" vertex="1" parent="1">
           <mxGeometry x="460" y="120" width="140" height="90" as="geometry"/>
         </mxCell>
-        <mxCell id="p3" value="p_2026_03_03&#xa;[03-03, MAXVALUE)&#xa;20,000 rows&#xa;HOT — all writes" style="shape=cylinder3;html=1;whiteSpace=wrap;fillColor=#f8cecc;strokeColor=#b85450;size=13;fontStyle=1;" vertex="1" parent="1">
+        <mxCell id="p3" value="p_2026_11_16&#xa;[11-16, MAXVALUE)&#xa;20,000 rows&#xa;HOT — all writes" style="shape=cylinder3;html=1;whiteSpace=wrap;fillColor=#f8cecc;strokeColor=#b85450;size=13;fontStyle=1;" vertex="1" parent="1">
           <mxGeometry x="640" y="120" width="160" height="90" as="geometry"/>
         </mxCell>
         <mxCell id="le" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeWidth=3;strokeColor=#b85450;label=all inserts" edge="1" parent="1" source="stream" target="p3"><mxGeometry relative="1" as="geometry"/></mxCell>
@@ -36,7 +36,7 @@
           <mxGeometry x="580" y="530" width="120" height="80" as="geometry"/>
         </mxCell>
         <mxCell id="he" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#82b366;label=balanced writes" edge="1" parent="1" source="stream" target="hs2"><mxGeometry relative="1" as="geometry"/></mxCell>
-        <mxCell id="cmp" value="One-day read WHERE event_time &gt;= '03-01' AND &lt; '03-02':&#xa;&#xa;RANGE → scans 1 partition (partition pruning)&#xa;HASH  → fans out to all 8 shards&#xa;&#xa;Trade-off: range optimizes windowed READS,&#xa;concentrates WRITES on 'now'. Hash is the mirror." style="rounded=0;html=1;whiteSpace=wrap;fillColor=#f5f5f5;strokeColor=#666666;align=left;spacingLeft=10;fontSize=12;" vertex="1" parent="1">
+        <mxCell id="cmp" value="One-day read WHERE recorded_at &gt;= '11-14' AND &lt; '11-15':&#xa;&#xa;RANGE → scans 1 partition (partition pruning)&#xa;HASH  → fans out to all 8 shards&#xa;&#xa;Trade-off: range optimizes windowed READS,&#xa;concentrates WRITES on 'now'. Hash is the mirror." style="rounded=0;html=1;whiteSpace=wrap;fillColor=#f5f5f5;strokeColor=#666666;align=left;spacingLeft=10;fontSize=12;" vertex="1" parent="1">
           <mxGeometry x="870" y="220" width="330" height="220" as="geometry"/>
         </mxCell>
       </root>

@@ -1,119 +1,118 @@
 site_name: Database Sharding
-site_description: A hands-on database sharding course with PostgreSQL, Citus, and a real marketplace workload.
+site_description: A hands-on database sharding course with PostgreSQL, Citus, PostGIS, and a real fleet telematics workload.
 docs_dir: docs
 repo_url: https://github.com/nitinkc/db-sharding
 site_url: https://nitinkc.github.io/db-sharding/
 
 theme:
-  name: material
-  features:
-    # Navigation
-    - navigation.tabs
-    - navigation.tabs.sticky
-    - navigation.sections
-    - navigation.expand
-    - navigation.path
-    - navigation.top # Back-to-top button
-    - navigation.footer # Prev/Next page links
-    # navigation.instant disabled — breaks live reload (re-enable for production builds)
-    # - navigation.instant
-    # - navigation.instant.progress
-    # Search
-    - search.suggest
-    - search.highlight
-    - search.share
-    # Content
-    - content.code.copy
-    - content.code.annotate # (1) style code annotations
-    - content.tabs.link # Sync tabs across page
-    - content.tooltips
-  palette:
-    - media: "(prefers-color-scheme: light)"
-      scheme: default
-      primary: brown
-      accent: blue
-      toggle:
-        icon: material/weather-night
-        name: Switch to dark mode
-    - media: "(prefers-color-scheme: dark)"
-      scheme: slate
-      primary: brown
-      accent: blue
-      toggle:
-        icon: material/weather-sunny
-        name: Switch to light mode
+      name: material
+      features:
+            # Navigation
+            - navigation.tabs
+            - navigation.tabs.sticky
+            - navigation.sections
+            - navigation.expand
+            - navigation.path
+            - navigation.top # Back-to-top button
+            - navigation.footer # Prev/Next page links
+            # navigation.instant disabled — breaks live reload (re-enable for production builds)
+            # - navigation.instant
+            # - navigation.instant.progress
+            # Search
+            - search.suggest
+            - search.highlight
+            - search.share
+            # Content
+            - content.code.copy
+            - content.code.annotate # (1) style code annotations
+            - content.tabs.link # Sync tabs across page
+            - content.tooltips
+      palette:
+            - media: "(prefers-color-scheme: light)"
+              scheme: default
+              primary: brown
+              accent: blue
+              toggle:
+                    icon: material/weather-night
+                    name: Switch to dark mode
+            - media: "(prefers-color-scheme: dark)"
+              scheme: slate
+              primary: brown
+              accent: blue
+              toggle:
+                    icon: material/weather-sunny
+                    name: Switch to light mode
 
 plugins:
-  - search:
-      lang: en
-  - mkdocs_quiz
-  - mermaid2
-  - glightbox
+      - search:
+              lang: en
+      - mkdocs_quiz
+      - mermaid2
+      - glightbox
 
 markdown_extensions:
-  - admonition
-  - pymdownx.details
-  - pymdownx.highlight:
-      anchor_linenums: true
-      use_pygments: true
-      guess_lang: true
-      line_spans: __span
-      pygments_lang_class: true
-  - pymdownx.inlinehilite
-  - pymdownx.superfences:
-      custom_fences:
-        - name: mermaid
-          class: mermaid
-          format: !!python/name:pymdownx.superfences.fence_code_format
-  - pymdownx.tabbed:
-      alternate_style: true
-  - pymdownx.tasklist:
-      custom_checkbox: true
-  - pymdownx.emoji:
-      emoji_index: !!python/name:material.extensions.emoji.twemoji
-      emoji_generator: !!python/name:material.extensions.emoji.to_svg
-  - toc:
-      permalink: true
-      title: On this page
-  - abbr
-  - attr_list
-  - md_in_html
-  - pymdownx.snippets:
-      base_path: docs
-  - tables
+      - admonition
+      - pymdownx.details
+      - pymdownx.superfences
+      - pymdownx.highlight:
+              anchor_linenums: true
+              use_pygments: true
+              guess_lang: true
+              line_spans: __span
+              pygments_lang_class: true
+      - pymdownx.inlinehilite
+      - pymdownx.superfences:
+              custom_fences:
+                    - name: mermaid
+                      class: mermaid
+                      format: !!python/name:pymdownx.superfences.fence_code_format
+      - pymdownx.tabbed:
+              alternate_style: true
+      - pymdownx.tasklist:
+              custom_checkbox: true
+      - pymdownx.emoji:
+              emoji_index: !!python/name:material.extensions.emoji.twemoji
+              emoji_generator: !!python/name:material.extensions.emoji.to_svg
+      - toc:
+              permalink: true
+              title: On this page
+      - abbr
+      - attr_list
+      - md_in_html
+      - pymdownx.snippets:
+              base_path: docs
+      - tables
 
 nav:
-  - Home: index.md
-  - Modules:
-      - "00 · Environment setup": modules/00-environment-setup.md
-      - Sharding:
-          - "01 · Why sharding?": modules/01-why-sharding.md
-          - "02 · Sharding strategies": modules/02-sharding-strategies.md
-          - "03 · Citus architecture": modules/03-citus-architecture.md
-          - "04 · Choosing a shard key": modules/04-choosing-a-shard-key.md
-          - "05 · Query routing": modules/05-query-routing.md
-          - "06 · Resharding & limits": modules/06-resharding-and-limits.md
-      - Partitioning:
-          - "07 · Partitioning & time-series": modules/07-range-and-timeseries.md
-      - "08 · Capstone": modules/08-capstone.md
-  - Labs:
-      - Sharding:
-          - "1 · Orientation": labs/lab-01-orientation.md
-          - "2 · Table storage": labs/lab-02-table-storage.md
-          - "3 · Distribute sellers": labs/lab-03-distribute-sellers.md
-          - "4 · Shard placement": labs/lab-04-shard-placement.md
-          - "5 · Inside a shard": labs/lab-05-inside-a-shard.md
-          - "6 · Shard-key experiments": labs/lab-06-shard-key-lab.md
-      - Partitioning:
-          - "6 · Range partitioning (Tasks 8–9)": labs/lab-06-shard-key-lab.md
-  - Solutions:
-      - Overview: solutions/index.md
-      - Sharding:
-          - Lab 1: solutions/lab-01-solutions.md
-          - Lab 2: solutions/lab-02-solutions.md
-          - Lab 3: solutions/lab-03-solutions.md
-          - Lab 4: solutions/lab-04-solutions.md
-          - Lab 5: solutions/lab-05-solutions.md
-          - Lab 6: solutions/lab-06-solutions.md
-      - Partitioning:
-          - "Lab 6 (Tasks 8–9)": solutions/lab-06-solutions.md
+      - Home: index.md
+      - Modules:
+              - "00 · Environment setup": modules/00-environment-setup.md
+              - Sharding:
+                      - "01 · Why sharding?": modules/01-why-sharding.md
+                      - "02 · Sharding strategies": modules/02-sharding-strategies.md
+                      - "03 · Citus architecture": modules/03-citus-architecture.md
+                      - "04 · Choosing a shard key": modules/04-choosing-a-shard-key.md
+                      - "05 · Query routing": modules/05-query-routing.md
+                      - "06 · Resharding & limits": modules/06-resharding-and-limits.md
+              - Partitioning:
+                      - "07 · Partitioning & time-series": modules/07-range-and-timeseries.md
+              - "08 · Capstone": modules/08-capstone.md
+      - Labs:
+              - Sharding:
+                      - "Lab 1 · Orientation": labs/lab-01-orientation.md
+                      - "Lab 1: Solutions": labs/solutions/lab-01-solutions.md
+                      - "Lab 2 · Table storage": labs/lab-02-table-storage.md
+                      - "Lab 2: Solutions": labs/solutions/lab-02-solutions.md
+                      - "Lab 3 · Distribute fleets": labs/lab-03-distribute-fleets.md
+                      - "Lab 3: Solutions": labs/solutions/lab-03-solutions.md
+                      - "Lab 4 · Shard placement": labs/lab-04-shard-placement.md
+                      - "Lab 4: Solutions": labs/solutions/lab-04-solutions.md
+                      - "Lab 5 · Inside a shard": labs/lab-05-inside-a-shard.md
+                      - "Lab 5: Solutions": labs/solutions/lab-05-solutions.md
+                      - "Lab 6 · Shard key: good vs bad queries": labs/lab-06-shard-key-lab.md
+                      - "Lab 6: Solutions": labs/solutions/lab-06-solutions.md
+              - Partitioning:
+                      - "Lab 7 · Range partitioning": labs/lab-07-range-partitioning.md
+                      - "Lab 7: Solutions": labs/solutions/lab-07-solutions.md
+                      - "Lab 8 · Distributed time-series & geofencing": labs/lab-08-distributed-timeseries.md
+                      - "Lab 8: Solutions": labs/solutions/lab-08-solutions.md

@@ -1,64 +1,97 @@
 services:
   coordinator:
-    image: citusdata/citus:12.1
-    container_name: bazaar-coordinator
+    build: ./db
+    image: db-sharding-pg16-citus:13.4-postgis
+    command: -c shared_preload_libraries=citus
+    container_name: fleet-coordinator
     ports:
       - "5432:5432"
     environment:
-      POSTGRES_DB: bazaar
+      POSTGRES_DB: fleet
       POSTGRES_USER: postgres
       POSTGRES_HOST_AUTH_METHOD: trust
     volumes:
       - ./db/coordinator-init:/docker-entrypoint-initdb.d
       - coordinator-data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d bazaar"]
+      test: ["CMD-SHELL", "pg_isready -h localhost -U postgres -d fleet"]
       interval: 2s
       timeout: 5s
       retries: 30
     networks:
-      - bazaar-net
+      - fleet-net
 
   worker1:
-    image: citusdata/citus:12.1
-    container_name: bazaar-worker1
+    build: ./db
+    image: db-sharding-pg16-citus:13.4-postgis
+    command: -c shared_preload_libraries=citus
+    container_name: fleet-worker1
+    ports:
+      - "5433:5432"
     environment:
-      POSTGRES_DB: bazaar
+      POSTGRES_DB: fleet
       POSTGRES_USER: postgres
       POSTGRES_HOST_AUTH_METHOD: trust
     volumes:
       - ./db/worker-init:/docker-entrypoint-initdb.d
       - worker1-data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d bazaar"]
+      test: ["CMD-SHELL", "pg_isready -h localhost -U postgres -d fleet"]
       interval: 2s
       timeout: 5s
       retries: 30
     networks:
-      - bazaar-net
+      - fleet-net
 
   worker2:
-    image: citusdata/citus:12.1
-    container_name: bazaar-worker2
+    build: ./db
+    image: db-sharding-pg16-citus:13.4-postgis
+    command: -c shared_preload_libraries=citus
+    container_name: fleet-worker2
+    ports:
+      - "5434:5432"
     environment:
-      POSTGRES_DB: bazaar
+      POSTGRES_DB: fleet
       POSTGRES_USER: postgres
       POSTGRES_HOST_AUTH_METHOD: trust
     volumes:
       - ./db/worker-init:/docker-entrypoint-initdb.d
       - worker2-data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d bazaar"]
+      test: ["CMD-SHELL", "pg_isready -h localhost -U postgres -d fleet"]
       interval: 2s
       timeout: 5s
       retries: 30
     networks:
-      - bazaar-net
+      - fleet-net
+
+  worker3:
+    build: ./db
+    image: db-sharding-pg16-citus:13.4-postgis
+    command: -c shared_preload_libraries=citus
+    container_name: fleet-worker3
+    ports:
+      - "5435:5432"
+    environment:
+      POSTGRES_DB: fleet
+      POSTGRES_USER: postgres
+      POSTGRES_HOST_AUTH_METHOD: trust
+    volumes:
+      - ./db/worker-init:/docker-entrypoint-initdb.d
+      - worker3-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -h localhost -U postgres -d fleet"]
+      interval: 2s
+      timeout: 5s
+      retries: 30
+    networks:
+      - fleet-net
 
 volumes:
   coordinator-data:
   worker1-data:
   worker2-data:
+  worker3-data:
 
 networks:
-  bazaar-net:
+  fleet-net:

@@ -2,18 +2,19 @@
 
 Citus turns a fleet of PostgreSQL servers into one logical, sharded database.
 It is a PostgreSQL **extension** — not a fork — so every node is just Postgres
-with extra superpowers.
+with extra superpowers (ours also carry PostGIS, since the workload is
+geospatial).
 
 ## Roles
 
-```
+```text
    app / psql
        │
        ▼
 ┌──────────────┐        ┌──────────────┐
-│ COORDINATOR  │───────▶│  WORKER 1    │  shards: sellers_102016 … _102019
+│ COORDINATOR  │───────▶│  WORKER 1    │  shards: fleets_102016 … _102019
 │ localhost    │        │  citus+pg    │
-│   :5432      │───────▶│  WORKER 2    │  shards: sellers_102020 … _102023
+│   :5432      │───────▶│  WORKER 2    │  shards: fleets_102020 … _102023
 │ metadata,    │        └──────────────┘
 │ planning,    │
 │ merge        │
@@ -25,10 +26,10 @@ with extra superpowers.
 - **Coordinator** — owns the cluster metadata, plans distributed queries, sends
   per-shard tasks to workers, merges results. By default holds no data shards.
 - **Workers** — hold shards as ordinary tables named `<table>_<shardid>`
-  (`sellers_102016`), execute shard queries, return partial results.
+  (`fleets_102016`), execute shard queries, return partial results.
 
 The coordinator you meet in the labs is a regular Postgres you can also keep
-local tables on — which is exactly what `listings` and `favorites` are before
+local tables on — which is exactly what `vehicles` and `trips` are before
 you distribute them.
 
 ## The three table types
@@ -36,7 +37,7 @@ you distribute them.
 | Type | Metadata | Physical rows | Use for |
 |---|---|---|---|
 | `distributed` | in `citus_tables` | sharded across workers by the distribution column | big, high-traffic tables |
-| `reference` | in `citus_tables` | **full copy on every worker** | small lookups/dimensions joined everywhere (`countries`, `categories`) |
+| `reference` | in `citus_tables` | **full copy on every worker** | small lookups/dimensions joined everywhere (`service_zones`, `regions`) |
 | local | absent | only on coordinator | everything else |
 
 ## Shards and placements
@@ -78,7 +79,7 @@ Two tables distributed by the same column type, shard count, and placements
 share a **co-location group** (`colocation_id`). Guarantees: shard N of table A
 and shard N of table B live on the same worker ⇒ joins on the distribution
 column run *inside* the worker as local joins (Lab 6, Task 6).
-`colocate_with := 'sellers'` inherits both the shard count and placement —
+`colocate_with := 'fleets'` inherits both the shard count and placement —
 which is why you can't pass `shard_count` alongside it.
 
 ## Quick check

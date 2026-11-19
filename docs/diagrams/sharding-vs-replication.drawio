@@ -16,7 +16,7 @@
         <mxCell id="p1" value="single node&#xa;all writes + all reads&#xa;one disk, one CPU" style="rounded=1;html=1;whiteSpace=wrap;fillColor=#fff2cc;strokeColor=#d6b656;verticalAlign=top;spacingTop=6;" vertex="1" parent="1">
           <mxGeometry x="60" y="80" width="300" height="300" as="geometry"/>
         </mxCell>
-        <mxCell id="p1db" value="bazaar&#xa;ALL rows" style="shape=cylinder3;html=1;whiteSpace=wrap;fillColor=#ffe6cc;strokeColor=#d79b00;size=18;" vertex="1" parent="1">
+        <mxCell id="p1db" value="fleet&#xa;ALL rows" style="shape=cylinder3;html=1;whiteSpace=wrap;fillColor=#ffe6cc;strokeColor=#d79b00;size=18;" vertex="1" parent="1">
           <mxGeometry x="150" y="180" width="120" height="90" as="geometry"/>
         </mxCell>
         <mxCell id="p2" value="primary → replicas&#xa;writes: only primary&#xa;reads: any node" style="rounded=1;html=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;verticalAlign=top;spacingTop=6;" vertex="1" parent="1">

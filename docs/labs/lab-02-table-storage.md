@@ -1,26 +1,26 @@
-# Lab 2 — Investigate How the `sellers` Table Is Stored
+# Lab 2 — Investigate How the `fleets` Table Is Stored
 
 **Module reference:** [Module 03 — Citus Architecture](../modules/03-citus-architecture.md)
 
 ## Goal
 
-The `bazaar` database contains a `sellers` table — one row per seller profile
-(10,000 sellers; seller 1 is *Leather Lane*, 2 is *Copper Kettle*, 3 is
-*Maple & Pine*). Before changing anything, work out **how the cluster currently
+The `fleet` database contains a `fleets` table — one row per fleet operator
+(10,000 fleets; fleet 1 is *Metro Cabs*, 2 is *Harbor Logistics*, 3 is
+*Golden Gate Rides*).
+
+Before changing anything, work out **how the cluster currently
 manages this table**. Collect three pieces of evidence:
 
-1. Does Citus recognise `sellers` as one of the tables it manages, and if so of
-   what type?
-2. Do any shards exist for `sellers`, and on which worker nodes do they live?
-3. How many rows does `sellers` return when you query it through the
-   coordinator?
+1. Does Citus recognise `fleets` as one of the tables it manages, and if so of what type?
+2. Do any shards exist for `fleets`, and on which worker nodes do they live?
+3. How many rows does `fleets` return when you query it through thecoordinator?
 
 ## Background
 
 A table in a Citus cluster can be in one of three states:
 
 | State | Meaning |
-|---|---|
+| --- | --- |
 | **Local** | An ordinary PostgreSQL table living only on the coordinator. Citus doesn't manage it. |
 | **Distributed** | Sliced into shards; rows spread across workers by the distribution column. |
 | **Reference** | Copied in full to *every* worker (used for small lookup/dimension tables). |
@@ -37,39 +37,39 @@ three storage patterns with the metadata you collect below.
 
 ## Connect
 
-```
-psql -h localhost -p 5432 -U postgres -d bazaar
+```bash
+psql -h localhost -p 5432 -U postgres -d fleet
 ```
 
-## Step 1 — Is `sellers` a Citus-managed table?
+## Step 1 — Is `fleets` a Citus-managed table?
 
-Query `citus_tables` for `sellers`:
+Query `citus_tables` for `fleets`:
 
 ```sql
 SELECT table_name, citus_table_type, distribution_column, shard_count
 FROM citus_tables
-WHERE table_name = 'sellers'::regclass;
+WHERE table_name = 'fleets'::regclass;
 ```
 
-## Step 2 — Do shards exist for `sellers`?
+## Step 2 — Do shards exist for `fleets`?
 
-Query `citus_shards` for `sellers` and note the worker each shard is on:
+Query `citus_shards` for `fleets` and note the worker each shard is on:
 
 ```sql
 SELECT table_name, shardid, shard_name, nodename, nodeport
 FROM citus_shards
-WHERE table_name = 'sellers'::regclass;
+WHERE table_name = 'fleets'::regclass;
 ```
 
 ## Step 3 — How many rows?
 
 ```sql
-SELECT count(*) FROM sellers;
+SELECT count(*) FROM fleets;
 ```
 
 ## Question
 
-Based on the three pieces of evidence, how is the `sellers` table currently
+Based on the three pieces of evidence, how is the `fleets` table currently
 stored — local, distributed, or reference? Justify your answer from what you
 observed.
 
@@ -80,6 +80,6 @@ observed.
 - [ ] You noticed that a **local** table still returns all its rows through the
       coordinator — "not managed by Citus" does not mean "empty".
 
-**Next:** [Lab 3 — Distribute the `sellers` table](lab-03-distribute-sellers.md)
+**Next:** [Lab 3 — Distribute the `fleets` table](lab-03-distribute-fleets.md)
 
-*Stuck? See [solutions/lab-02-solutions.md](../solutions/lab-02-solutions.md).*
+*Stuck? See [solutions/lab-02-solutions.md](solutions/lab-02-solutions.md).*

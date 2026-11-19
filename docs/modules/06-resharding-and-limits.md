@@ -3,14 +3,15 @@
 ## Adding a node
 
 ```sql
-SELECT citus_add_node('worker3', 5432);
+SELECT citus_add_node('worker4', 5432);
 SELECT rebalance_table_shards();
 ```
 
 The new worker starts empty. The rebalancer moves shard *placements* until each
-node holds a fair share — for our 8-shard / 3-worker world: 3, 3, 2. Logical
-shards don't change; only which node hosts them moves. Queries keep working
-during the move (metadata flips at the end).
+node holds a fair share — our 8-shard / 3-worker cluster (3, 3, 2) becomes
+8-shard / 4-worker: 2, 2, 2, 2. Logical shards don't change; only which node
+hosts them moves. Queries keep working during the move (metadata flips at the
+end).
 
 ## Rebalancing ≠ resharding
 
@@ -25,11 +26,11 @@ This is why shard count and shard key are front-loaded decisions (Module 04).
 
 ## Tenant isolation
 
-A "celebrity seller" (the bazaar equivalent of a celebrity's Twitter account)
-can overload one shard even under a good key. Citus offers tenant isolation
-(`isolate_tenant_to_new_shard`) — split that tenant onto its own shard so the
-noisy neighbor stops hurting others. The general concept exists in every
-sharded system as *shard splitting* or *dedicated shards*.
+A "mega-fleet" (a national postal carrier running 100k vehicles on one
+`fleet_id`) can overload one shard even under a good key. Citus offers tenant
+isolation (`isolate_tenant_to_new_shard`) — split that tenant onto its own
+shard so the noisy neighbor stops hurting others. The general concept exists
+in every sharded system as *shard splitting* or *dedicated shards*.
 
 ## CAP and what sharding does to consistency
 
@@ -55,7 +56,7 @@ deliberately.
 - Some SQL shapes can't run distributed (certain subqueries, `INSERT ... SELECT`
   across non-co-located tables, sequences are per-node).
 - Reference tables help for joins to small dimensions — every worker already
-  has the whole table.
+  has the whole table (Lab 8 uses this for geofences).
 - Metadata lives on the coordinator: it's a planning SPOF (mitigate with HA on
   the coordinator itself).
 
@@ -72,7 +73,7 @@ Rebalancing moves *placements*, not rows — cheap per row. Changing the shard c
 </quiz>
 
 <quiz>
-A "celebrity seller" overloads one shard even under a good shard key. What does Citus offer?
+A mega-fleet overloads one shard even under a good shard key. What does Citus offer?
 - [x] Tenant isolation — split that tenant onto its own dedicated shard
 - [ ] Convert the table to a reference table
 - [ ] Increase the replication factor

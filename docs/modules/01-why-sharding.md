@@ -5,7 +5,7 @@
 A single PostgreSQL server has hard ceilings: CPU, RAM, IOPS, disk, connection
 count. When a workload hits one of them you have three levers:
 
-```
+```text
    Scale UP              Scale OUT (reads)         Scale OUT (writes)
    ──────────            ─────────────────         ──────────────────
    bigger machine        replicas share reads     SHARDING: split the data
@@ -34,18 +34,21 @@ the two are complementary, not alternatives.
 
 ![Sharding versus replication: splitting rows versus copying the dataset](../diagrams/sharding-vs-replication.svg)
 
-## The bazaar story
+## The fleet telematics story
 
-Bazaar is a marketplace. Sellers post listings; buyers favorite them. Growth:
+The platform runs fleets of delivery and ride-share vehicles. Every vehicle
+streams GPS pings into telematics; geofences drive pricing and dispatch; trips
+and driver records anchor the business. Growth:
 
-- 10k sellers → 10M sellers
-- Listings & favorites grow ~10× faster than sellers
-- P99 latency on "show my storefront" degrades as tables outgrow RAM
+- 10k fleets → 10M fleet-vehicles
+- Telematics & trips grow ~100× faster than fleets (pings every few seconds)
+- P99 latency on "show this fleet's live map" degrades as tables outgrow RAM
 
-Sharding by `seller_id` is the natural fit: a seller's storefront is
-self-contained, seller traffic is roughly uniform, and "join a seller to their
-listings" stays inside one machine. We'll prove each of those claims with real
-query plans in the labs.
+Sharding by `fleet_id` is the natural fit: a fleet's vehicles, pings, and trips
+are self-contained, fleet traffic is roughly uniform, and "join a fleet to its
+vehicles" stays inside one machine. Time adds a second axis — telematics
+retention and time-window reads — which is where *partitioning* comes in on top
+of sharding (Labs 7–8). We'll prove each claim with real query plans.
 
 ## What sharding costs
 
@@ -55,7 +58,7 @@ query plans in the labs.
   movement; cross-shard transactions need 2PC.
 - **Resharding is a migration**, not a config change.
 - **Uniqueness & foreign keys** only work inside a shard (or must include the
-  shard key — as `sellers_by_country`'s PK already demonstrates).
+  shard key — as `vehicles_by_region`'s PK already demonstrates).
 
 ## When NOT to shard
 
@@ -70,7 +73,7 @@ Sharding is a *scaling* tool, not a default architecture.
 
 <quiz>
 Your dataset fits comfortably on one well-sized node and the bottleneck is read traffic. What is the best move?
-- [ ] Shard by `seller_id` anyway
+- [ ] Shard by `fleet_id` anyway
 - [x] Add read replicas or a cache
 - [ ] Reshard onto more nodes
 - [ ] Convert the tables to reference tables

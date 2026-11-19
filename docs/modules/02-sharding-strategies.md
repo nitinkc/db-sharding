@@ -13,16 +13,19 @@ destroys ordering, so ids 1,2,3,… scatter (Lab 6, Task 2). Deterministic
 routing: any value maps to exactly one shard, computable without lookups
 (`get_shard_id_for_distribution_column`).
 
-**Cons:** destroys *locality*. A range predicate (`event_time BETWEEN ...`) can
-satisfy rows anywhere → the query fans out to every shard.
+**Cons:** destroys *locality*. A range predicate (`recorded_at BETWEEN ...`) can
+satisfy rows anywhere → the query fans out to every shard. For time-series
+this is the classic trade-off — see Lab 7.
 
 ## 2. Range-based sharding
 
 Each shard owns a contiguous interval of the key — e.g. one shard per day
-(Lab 6, Task 8 models this with native PG partitions).
+(Lab 7 models this with native PG partitions, and Lab 8 distributes
+them).
 
 **Pros:** range queries touch only the shards whose intervals overlap — the
-best possible read pattern for time windows.
+best possible read pattern for time windows — and an entire expired interval
+becomes a cheap `DROP`.
 
 **Cons:** monotonically increasing keys (timestamps, sequences) pour all writes
 into the *last* shard — the **hot shard** problem. Older shards idle.
@@ -36,28 +39,30 @@ available and consistent.
 
 ## 4. Geographic / topology-aware sharding
 
-Shard by region (`country`, `datacenter`). Solves data-residency and
+Shard by region (`region`, `datacenter`). Solves data-residency and
 latency-to-user problems, but inherits every skew problem of low-cardinality
-keys — as Lab 6, Task 3 shows with `country`.
+keys — as Lab 6, Task 3 shows with `region`.
 
 ## The two properties that decide whether a shard key spreads load
 
 1. **Cardinality** — number of distinct values bounds how many shards can ever
-   hold data. 5 countries in 8 shards ⇒ ≥3 shards are empty forever.
+   hold data. 5 regions in 8 shards ⇒ ≥3 shards are empty forever.
 2. **Value distribution** — uniform values ⇒ uniform shards. A key where one
    value covers 60% of rows puts 60% of data (and probably 60%+ of traffic) on
    one shard.
 
-`seller_id` passes both tests for bazaar: high cardinality (10k values today,
-10M later) and roughly uniform activity per seller. `country` fails both.
+`fleet_id` passes both tests for the fleet workload: high cardinality (10k
+fleets today, 10M vehicles later) and roughly uniform activity per fleet.
+`region` fails both.
 
 ## Hotspots and monotonic keys
 
-The classic trap: shard a `created_at` table *by range* → every insert hits the
+The classic trap: shard a `recorded_at` table *by range* → every insert hits the
 newest shard. Or shard by *hash of timestamp* → balanced writes but every
 dashboard fans out to all shards. There is no free lunch: **pick the placement
 that optimizes your dominant workload, and pay the trade-off knowingly**
-(Lab 6, Task 9).
+(Lab 7, Task 5). The production-grade answer — hash for spread *plus* native
+partitions for time — is what Lab 8 builds.
 
 ## Consistent hashing (mention)
 
@@ -72,17 +77,17 @@ rebalancer), so row-level mapping stays stable while placements move.
 ## Quick check
 
 <quiz>
-A table is sharded by `country`, which has 5 distinct values, across 8 shards. What happens?
+A table is sharded by `region`, which has 5 distinct values, across 8 shards. What happens?
 - [ ] Rows spread evenly because hashing fills gaps
 - [x] At least 3 shards stay empty forever
-- [ ] Citus automatically splits hot countries into extra shards
+- [ ] Citus automatically splits hot regions into extra shards
 - [ ] The table becomes a reference table
 
 **Cardinality** bounds how many shards can ever hold data — 5 values can fill at most 5 shards.
 </quiz>
 
 <quiz>
-You shard a table *by range* on `created_at`. What goes wrong on writes?
+You shard a table *by range* on `recorded_at`. What goes wrong on writes?
 - [ ] Writes are rejected because timestamps are immutable
 - [ ] Writes fan out to every shard
 - [x] Every insert hits the newest shard — a hotspot

@@ -6,12 +6,12 @@ migration. Evaluate candidates against five criteria:
 
 ## The five criteria
 
-| Criterion | Question | bazaar example |
+| Criterion | Question | fleet example |
 |---|---|---|
-| Cardinality | Enough distinct values to fill every shard? | `seller_id` ✓ (10k→10M); `country` ✗ (5) |
-| Uniformity | Do values spread load evenly? | `seller_id` ✓; `country` puts 60% in one shard |
-| Query alignment | Do dominant queries filter on it? | "this seller's listings" filters `seller_id` ✓ |
-| Co-location potential | Do related tables share it? | sellers/listings/favorites all carry `seller_id` |
+| Cardinality | Enough distinct values to fill every shard? | `fleet_id` ✓ (10k→10M); `region` ✗ (5) |
+| Uniformity | Do values spread load evenly? | `fleet_id` ✓; `region` puts 60% in one shard |
+| Query alignment | Do dominant queries filter on it? | "this fleet's vehicles/pings" filters `fleet_id` ✓ |
+| Co-location potential | Do related tables share it? | fleets/vehicles/trips/telematics all carry `fleet_id` |
 | Immutability | Does the value ever change? | ids never change; a `status` column would |
 
 The ideal shard key is **a column that appears in most of your queries AND
@@ -22,9 +22,13 @@ usually wins — a slightly uneven single-shard query beats an even fan-out.
 
 Citus enforces: every `UNIQUE`, `PRIMARY KEY`, or foreign-key constraint on a
 distributed table must **include the distribution column**. That's why
-`listings` is keyed `(seller_id, listing_id)` and `sellers_by_country` is keyed
-`(country, seller_id)` — uniqueness can only be checked inside a shard without
+`vehicles` is keyed `(fleet_id, vehicle_id)` and `vehicles_by_region` is keyed
+`(region, vehicle_id)` — uniqueness can only be checked inside a shard without
 a cluster-wide lock.
+
+A table that is *also* natively partitioned stacks the rules: the PK must
+include the distribution column **and** every partition-key column — e.g.
+telematics needs `(fleet_id, recorded_at, …)`. Module 07 and Lab 8 show this.
 
 ## Shard key immutability
 
@@ -38,9 +42,13 @@ say so explicitly: `INSERT` the new row + `DELETE` the old in one transaction
 
 - Too few ⇒ coarse rebalancing, big shards.
 - Too many ⇒ metadata and per-shard-query overhead.
-- Citus default is 32; this course uses **8** so two workers get a visible 4/4
-  split. Pick a number ≥ expected max nodes so rebalancing (not resharding)
-  absorbs growth.
+- Citus default is 32; this course uses **8** so three workers get a visible
+  ~3/3/2 split. Pick a number ≥ expected max nodes so rebalancing (not
+  resharding) absorbs growth.
+
+Note the multiplier when a table is *also* partitioned: N shards × M partitions
+= N×M shard objects in the cluster. That overhead is real — Lab 8 shows what it
+looks like in `citus_shards`.
 
 ## Rebalancing vs resharding
 
@@ -54,33 +62,33 @@ via the colocation group.
 
 ## Anti-patterns
 
-- Shard key with one dominant value (a `country='US'` shard). → hotspot.
+- Shard key with one dominant value (a `region='NA'` shard). → hotspot.
 - Monotonic range key on an append-only stream. → write hotspot.
-- Low-cardinality enum (`status`, `type`, `country`). → empty shards + skew.
+- Low-cardinality enum (`status`, `type`, `region`). → empty shards + skew.
 - Key absent from the hot queries. → permanent fan-out.
 
-![Hashing seller IDs into shards placed across worker nodes](../diagrams/hash-placement.svg)
+![Hashing fleet IDs into shards placed across worker nodes](../diagrams/hash-placement.svg)
 
 ## Quick check
 
 <quiz>
-Why is `listings` keyed `(seller_id, listing_id)` instead of just `listing_id`?
+Why is `vehicles` keyed `(fleet_id, vehicle_id)` instead of just `vehicle_id`?
 - [ ] Composite keys are faster in Postgres
 - [x] Every UNIQUE/PRIMARY KEY on a distributed table must include the distribution column
-- [ ] `listing_id` alone is not unique
+- [ ] `vehicle_id` alone is not unique
 - [ ] Citus requires two-column primary keys
 
 Uniqueness can only be checked inside a shard without a cluster-wide lock, so Citus enforces that constraints include the shard key.
 </quiz>
 
 <quiz>
-Which of the five shard-key criteria does `country` fail for the bazaar workload? (Select all that apply.)
+Which of the five shard-key criteria does `region` fail for the fleet workload? (Select all that apply.)
 - [x] Cardinality — only ~5 distinct values
-- [x] Uniformity — one country holds ~60% of rows
-- [ ] Immutability — countries never change, so it passes
+- [x] Uniformity — one region holds ~60% of rows
+- [ ] Immutability — regions never change, so it passes
 - [ ] Query alignment — it passes because queries filter on it anyway
 
-`country` fails the two properties that spread load: too few values and a skewed distribution. `seller_id` passes both.
+`region` fails the two properties that spread load: too few values and a skewed distribution. `fleet_id` passes both.
 </quiz>
 
 **Next:** [Module 05 — Query Routing](05-query-routing.md)
